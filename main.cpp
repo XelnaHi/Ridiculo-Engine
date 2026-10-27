@@ -104,40 +104,45 @@ int main() {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float houseVertices[] = {
-        // Roof (single triangle), Red
-        -0.5f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top left
-        -0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
-        0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
+        // Roof Left Side, Red
+        0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top right
+        0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
+        -0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
+
+        // Roof Right Side, Red
+        0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top left
+        0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
+        0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
 
         // Front Wall Left Triangle, Black
-        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
-        -0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom left
-        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
+        -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
+        -0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom left
+        0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
 
         // Front Wall Right Triangle, Black
-        0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top right
-        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
-        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
+        0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top right
+        0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
+        -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
 
         // Left Window, Left Triangle, Light Blue
-        -0.3f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
-        -0.3f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom left
-        -0.1f, 0.1f, 0.f, 1.f, 1.f, 1.f, // bottom right
+        -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        -0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
+        -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
 
         // Left Window, Right Triangle, Light Blue
-        -0.3f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
-        -0.1f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top right
-        -0.1f, 0.1f, 0.f, 1.f, 1.f, 1.f, // bottom right
+        -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        -0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
+        -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
 
         // Right Window, Left Triangle, Light Blue
-        0.1f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
-        0.1f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom left
-        0.3f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+        0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        0.2f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
+        0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
 
         // Right Window, Right Triangle, Light Blue
-        0.1f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
-        0.3f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top right
-        0.3f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+        0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
+        0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
 
         // Front Door, Left Triangle, Light Blue
         -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
@@ -191,7 +196,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 27);
+        glDrawArrays(GL_TRIANGLES, 0, 30);
 
         // rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
 
