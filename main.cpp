@@ -104,17 +104,51 @@ int main() {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float houseVertices[] = {
-        -0.5f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // Roof - top left. Red
-        -0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // Roof - bottom left. Red
-        0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // Roof - bottom right. Red
+        // Roof (single triangle), Red
+        -0.5f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top left
+        -0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
+        0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
 
-        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - top left. Black
-        -0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - bottom left. Black
-        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - bottom right. Black
+        // Front Wall Left Triangle, Black
+        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
+        -0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom left
+        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
 
-        0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Right - top right. Black
-        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - bottom right. Black
-        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - top left. Black
+        // Front Wall Right Triangle, Black
+        0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top right
+        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
+        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
+
+        // Left Window, Left Triangle, Light Blue
+        -0.3f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
+        -0.3f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom left
+        -0.1f, 0.1f, 0.f, 1.f, 1.f, 1.f, // bottom right
+
+        // Left Window, Right Triangle, Light Blue
+        -0.3f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
+        -0.1f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top right
+        -0.1f, 0.1f, 0.f, 1.f, 1.f, 1.f, // bottom right
+
+        // Right Window, Left Triangle, Light Blue
+        0.1f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
+        0.1f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom left
+        0.3f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+
+        // Right Window, Right Triangle, Light Blue
+        0.1f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top left
+        0.3f, 0.3f, 0.0f, 1.f, 1.f, 1.f, // top right
+        0.3f, 0.1f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+
+        // Front Door, Left Triangle, Light Blue
+        -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
+        -0.1, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom left
+        0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+
+        // Front Door, Right Triangle, Light Blue
+        -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
+        0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top right
+        0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+
     };
 
     unsigned int VAO, VBO, EBO;
@@ -157,7 +191,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 9);
+        glDrawArrays(GL_TRIANGLES, 0, 27);
 
         // rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
 
@@ -186,5 +220,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+        // TODO: handle flag for roof color switch
     }
 }
