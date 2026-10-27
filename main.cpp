@@ -106,7 +106,15 @@ int main() {
     float houseVertices[] = {
         -0.5f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // Roof - top left. Red
         -0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // Roof - bottom left. Red
-        0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f // Roof - bottom right. Red
+        0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // Roof - bottom right. Red
+
+        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - top left. Black
+        -0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - bottom left. Black
+        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - bottom right. Black
+
+        0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Right - top right. Black
+        0.4f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - bottom right. Black
+        -0.4f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // Front Wall Left - top left. Black
     };
 
     unsigned int VAO, VBO, EBO;
@@ -149,7 +157,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 9);
 
         // rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
 
