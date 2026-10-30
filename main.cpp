@@ -48,55 +48,59 @@ int main() {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float houseVertices[] = {
-        // Roof Left Side, Red
+        // // Roof Left Side, Red
+        // 0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top right
+        // 0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
+        // -0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
+        //
+        // // Roof Right Side, Red
+        // 0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top left
+        // 0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
+        // 0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
+        //
+        // // Front Wall Left Triangle, Black
+        // -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
+        // -0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom left
+        // 0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
+        //
+        // // Front Wall Right Triangle, Black
+        // 0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top right
+        // 0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
+        // -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
+        //
+        // // Left Window, Left Triangle, Light Blue
+        // -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        // -0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
+        // -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
+        //
+        // // Left Window, Right Triangle, Light Blue
+        // -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        // -0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
+        // -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
+        //
+        // // Right Window, Left Triangle, Light Blue
+        // 0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        // 0.2f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
+        // 0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
+        //
+        // // Right Window, Right Triangle, Light Blue
+        // 0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
+        // 0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
+        // 0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
+        //
+        // // Front Door, Left Triangle, Light Blue
+        // -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
+        // -0.1, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom left
+        // 0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+        //
+        // // Front Door, Right Triangle, Light Blue
+        // -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
+        // 0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top right
+        // 0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
+
         0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top right
         0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
         -0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
-
-        // Roof Right Side, Red
-        0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top left
-        0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
-        0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
-
-        // Front Wall Left Triangle, Black
-        -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
-        -0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom left
-        0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
-
-        // Front Wall Right Triangle, Black
-        0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top right
-        0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
-        -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
-
-        // Left Window, Left Triangle, Light Blue
-        -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        -0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
-        -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
-
-        // Left Window, Right Triangle, Light Blue
-        -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        -0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
-        -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
-
-        // Right Window, Left Triangle, Light Blue
-        0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        0.2f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
-        0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
-
-        // Right Window, Right Triangle, Light Blue
-        0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
-        0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
-
-        // Front Door, Left Triangle, Light Blue
-        -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
-        -0.1, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom left
-        0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
-
-        // Front Door, Right Triangle, Light Blue
-        -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
-        0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top right
-        0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
     };
 
     unsigned int VAO, VBO, EBO;
@@ -136,14 +140,56 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-
         houseShader.use();
 
-        double time = glfwGetTime();
-        float greenValue = (sin(time) / 2.0f) + 0.5f;
-
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 30);
+
+        // Default Scale
+        houseShader.setFloat("u_xScale", 1.0f);
+        houseShader.setFloat("u_yScale", 1.0f);
+
+        // Default Color
+        houseShader.setColorRGBA("u_Color", 1.0f, 0.0f, 0.0f, 1.0f); // red
+
+
+        // Roof Begin
+        houseShader.setFloat("u_xOffset", 0.f);
+        houseShader.setFloat("u_yOffset", 0.f);
+
+        houseShader.setInt("u_xInvert", 1);
+        houseShader.setInt("u_yInvert", 1);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        houseShader.setFloat("u_xOffset", 0.f);
+        houseShader.setFloat("u_yOffset", 0.f);
+
+        houseShader.setInt("u_xInvert", -1);
+        houseShader.setInt("u_yInvert", 1);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // ----- Roof End ------
+
+        // Wall Begin
+        houseShader.setFloat("u_xScale", 1.5f);
+        houseShader.setFloat("u_yScale", 3.f);
+        houseShader.setColorRGBA("u_Color", 0.0f, 0.0f, 0.0f, 1.0f); // black
+
+
+        houseShader.setFloat("u_xOffset", 0.5f);
+        houseShader.setFloat("u_yOffset", -0.67f);
+
+        houseShader.setInt("u_xInvert", -1);
+        houseShader.setInt("u_yInvert", -1);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        houseShader.setFloat("u_xOffset", 0.3f);
+        houseShader.setFloat("u_yOffset", -0.63f);
+
+        houseShader.setInt("u_xInvert", 1);
+        houseShader.setInt("u_yInvert", 1);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // --------- Wall End --------
+
+
 
         // rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
 
