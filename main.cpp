@@ -1,7 +1,10 @@
 #define GLFW_INCLUDE_NONE // Disallow older versions of the OpenGL header to be included
+#include <cmath>
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "Shader.h"
 
 static constexpr int SCR_WIDTH = 800;
 static constexpr int SCR_HEIGHT = 600;
@@ -11,24 +14,6 @@ void error_callback(int error, const char *description);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-const char *vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec3 aColor;\n"
-        "out vec3 roofColor;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "    roofColor = aColor;\n"
-        "}\0";
-
-const char *fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "in vec3 roofColor;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = vec4(roofColor, 1.0);\n"
-        "}\n\0";
 
 
 int main() {
@@ -59,47 +44,6 @@ int main() {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
-
-    // build and compile shader program
-    // ------------------------------------
-    // Vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "Failed to compile vertex shader" << std::endl;
-    }
-
-    // Fragment shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "Failed to compile fragment shader" << std::endl;
-    }
-
-    // Link shaders to program
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "Failed to link shader program" << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -153,7 +97,6 @@ int main() {
         -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
         0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top right
         0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
-
     };
 
     unsigned int VAO, VBO, EBO;
@@ -184,6 +127,8 @@ int main() {
 
     glfwSwapInterval(1);
 
+    Shader houseShader("shaders/2DHouse/vHouse.glsl", "shaders/2DHouse/fHouse.glsl");
+
     while (!glfwWindowShouldClose(window)) {
         // input is currently registered as a callback as part of the programs init phase
 
@@ -191,10 +136,12 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+
+        houseShader.use();
+
         double time = glfwGetTime();
+        float greenValue = (sin(time) / 2.0f) + 0.5f;
 
-
-        glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 30);
 
