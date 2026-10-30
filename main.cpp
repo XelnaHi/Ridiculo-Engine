@@ -146,8 +146,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         houseShader.use();
-
         glBindVertexArray(VAO);
+
 
         // Default Scale
         houseShader.setFloat("u_xScale", 1.0f);

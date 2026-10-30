@@ -124,3 +124,17 @@ void Shader::setColorRGBA(const std::string& name, float r, float g, float b, fl
 {
     glUniform4f(glGetUniformLocation(ID, name.c_str()), r, g, b, a);
 }
+
+void Shader::DrawTriangle(float xScale, float yScale, float xOffset, float yOffset, float invert) const
+{
+    glUseProgram(ID);
+    setFloat("u_xScale", xScale);
+    setFloat("u_yScale", yScale);
+
+    setFloat("u_xOffset", xOffset);
+    setFloat("u_yOffset", yOffset);
+
+    setFloat("u_invert", invert);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}

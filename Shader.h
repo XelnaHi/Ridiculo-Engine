@@ -19,12 +19,15 @@ public:
     // Use/activate the shader
     void use();
 
-    // Utility
+    // Uniform Utility
     void setBool(const std::string &name, bool value) const;
     void setFloat(const std::string &name, float value) const;
     void setInt(const std::string &name, int value) const;
     void setInvert(const std::string &name, int value) const;
     void setColorRGBA(const std::string &name, float r, float g, float b, float a) const;
+
+    // Draw Utility
+    void DrawTriangle(float xScale, float yScale, float xOffset, float yOffset, float invert) const;
 };
 
 
