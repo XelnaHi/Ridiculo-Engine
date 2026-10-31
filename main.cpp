@@ -9,18 +9,18 @@
 static constexpr int SCR_WIDTH = 800;
 static constexpr int SCR_HEIGHT = 600;
 
-void error_callback(int error, const char* description);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void error_callback(int error, const char *description);
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 bool roofColorShouldChange = false;
 
-int main()
-{
+int main() {
     glfwSetErrorCallback(error_callback);
 
-    if (!glfwInit())
-    {
+    if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
         return -1;
     }
@@ -29,9 +29,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Ridiculo Engine", NULL, NULL);
-    if (!window)
-    {
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Ridiculo Engine", NULL, NULL);
+    if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -42,8 +41,7 @@ int main()
 
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -101,9 +99,9 @@ int main()
         // 0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top right
         // 0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
 
-        0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top right
-        0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
-        -0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
+        1.f, 1.f, 0.0f, 1.0f, 0.f, 0.f, // top right
+        1.f, 0.f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
+        -1.f, 0.f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
     };
 
     unsigned int VAO, VBO, EBO;
@@ -117,10 +115,10 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(houseVertices), houseVertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
 
@@ -137,8 +135,7 @@ int main()
 
     Shader houseShader("shaders/2DHouse/vHouse.glsl", "shaders/2DHouse/fHouse.glsl");
 
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         // input is currently registered as a callback as part of the programs init phase
 
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
@@ -148,155 +145,32 @@ int main()
         houseShader.use();
         glBindVertexArray(VAO);
 
-
-        // Default Scale
-        houseShader.setFloat("u_xScale", 1.0f);
-        houseShader.setFloat("u_yScale", 1.0f);
-
-        // Default Color
-        houseShader.setColorRGBA("u_Color", 1.0f, 0.0f, 0.0f, 1.0f); // red
-
-
-        // Roof Begin
-        houseShader.setFloat("u_xOffset", 0.f);
-        houseShader.setFloat("u_yOffset", 0.f);
-
-        houseShader.setInt("u_xInvert", 1);
-        houseShader.setInt("u_yInvert", 1);
-
-        if (roofColorShouldChange)
-        {
-            houseShader.setColorRGBA("u_Color", 0.0f, 1.0f, 0.0f, 1.0f); // green
+        // Red roof
+        if (roofColorShouldChange) {
+            houseShader.drawTriangle(0.5f, 0.3f, 0.f, 0.3f, 1.f, 0.f, 1.f, 0.f, 0.f, 0.f);
         }
-        else
-        {
-            houseShader.setColorRGBA("u_Color", 1.0f, 0.0f, 0.0f, 1.0f); // red
+        // Green roof
+        else {
+            houseShader.drawTriangle(0.5f, 0.3f, 0.f, 0.3f, 1.f, 1.f, 0.f, 0.f, 0.f, 0.f);
         }
-        glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        houseShader.setFloat("u_xOffset", 0.f);
-        houseShader.setFloat("u_yOffset", 0.f);
+        // Walls
+        houseShader.drawRect(0.4f, 0.8f, 0.f, 0.8f, 0.f, 0.f, 0.f, -0.5, 0.f);
 
-        houseShader.setInt("u_xInvert", -1);
-        houseShader.setInt("u_yInvert", 1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // ----- Roof End ------
+        // Door
+        houseShader.drawRect(0.1f, 0.3f, 0.f, 0.3f, 0.f, 0.f, 1.f, -0.5, 0.f);
 
-        // Wall Begin
-        houseShader.setFloat("u_xScale", 1.5f);
-        houseShader.setFloat("u_yScale", 3.f);
-        houseShader.setColorRGBA("u_Color", 0.0f, 0.0f, 0.0f, 1.0f); // black
+        // Left window
+        houseShader.drawRect(0.05f, 0.3f, 0.f, 0.3f, 0.f, 0.f, 1.f, -0.2, -0.3f);
 
-        houseShader.setFloat("u_xOffset", 0.4f);
-        houseShader.setFloat("u_yOffset", -0.67f);
-
-        houseShader.setInt("u_xInvert", -1);
-        houseShader.setInt("u_yInvert", -1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        houseShader.setFloat("u_xOffset", 0.4f);
-        houseShader.setFloat("u_yOffset", -0.63f);
-
-        houseShader.setInt("u_xInvert", 1);
-        houseShader.setInt("u_yInvert", 1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // --------- Wall End --------
-
-        // Left Window Begin
-        houseShader.setFloat("u_xScale", 0.2f);
-        houseShader.setFloat("u_yScale", 0.8f);
-
-        houseShader.setFloat("u_xOffset", -1.5f);
-        houseShader.setFloat("u_yOffset", -0.5f);
-
-        houseShader.setInt("u_xInvert", 1);
-        houseShader.setInt("u_yInvert", 1);
-
-        houseShader.setColorRGBA("u_Color", 0.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // ------- Left Window End ---------
-
-        // Left Window Begin
-        houseShader.setFloat("u_xScale", 0.2f);
-        houseShader.setFloat("u_yScale", 0.8f);
-
-        houseShader.setFloat("u_xOffset", 2.3f);
-        houseShader.setFloat("u_yOffset", -0.8f);
-
-        houseShader.setInt("u_xInvert", -1);
-        houseShader.setInt("u_yInvert", -1);
-
-        houseShader.setColorRGBA("u_Color", 1.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        houseShader.setFloat("u_xScale", 0.2f);
-        houseShader.setFloat("u_yScale", 0.8f);
-
-        houseShader.setFloat("u_xOffset", -1.5f);
-        houseShader.setFloat("u_yOffset", -0.5f);
-
-        houseShader.setInt("u_xInvert", 1);
-        houseShader.setInt("u_yInvert", 1);
-
-        houseShader.setColorRGBA("u_Color", 0.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // ------- Left Window End ---------
-
-        // Left Window Begin
-        houseShader.setFloat("u_xScale", 0.2f);
-        houseShader.setFloat("u_yScale", 0.8f);
-
-        houseShader.setFloat("u_xOffset", -1.5f);
-        houseShader.setFloat("u_yOffset", -0.8f);
-
-        houseShader.setInt("u_xInvert", -1);
-        houseShader.setInt("u_yInvert", -1);
-
-        houseShader.setColorRGBA("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        houseShader.setFloat("u_xScale", 0.2f);
-        houseShader.setFloat("u_yScale", 0.8f);
-
-        houseShader.setFloat("u_xOffset", 2.3f);
-        houseShader.setFloat("u_yOffset", -0.5f);
-
-        houseShader.setInt("u_xInvert", 1);
-        houseShader.setInt("u_yInvert", 1);
-
-        houseShader.setColorRGBA("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // ------- Left Window End ---------
-
-        // Door Begin
-        houseShader.setFloat("u_xScale", 0.25f);
-        houseShader.setFloat("u_yScale", 1.f);
-
-        houseShader.setFloat("u_xOffset", 0.5f);
-        houseShader.setFloat("u_yOffset", -0.89f);
-
-        houseShader.setColorRGBA("u_Color", 1.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        houseShader.setFloat("u_xScale", 0.25f);
-        houseShader.setFloat("u_yScale", 1.f);
-
-        houseShader.setFloat("u_xOffset", 0.3f);
-        houseShader.setFloat("u_yOffset", -0.41f);
-
-        houseShader.setInt("u_xInvert", -1);
-        houseShader.setInt("u_yInvert", -1);
+        // Right window
+        houseShader.drawRect(0.05f, 0.3f, 0.f, 0.3f, 0.f, 0.f, 1.f, -0.2, 0.3f);
 
 
-        houseShader.setColorRGBA("u_Color", 1.0f, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // ----- Door End ----
-
-
-        glfwSwapBuffers(window);
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
         // After all rendering commands are done, we swap the buffers.
+        glfwSwapBuffers(window);
 
         glfwPollEvents();
     }
@@ -307,25 +181,20 @@ int main()
     return 0;
 }
 
-void error_callback(int error, const char* description)
-{
+void error_callback(int error, const char *description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-    {
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
         roofColorShouldChange = !roofColorShouldChange;
     }
 }

@@ -27,7 +27,9 @@ public:
     void setColorRGBA(const std::string &name, float r, float g, float b, float a) const;
 
     // Draw Utility
-    void DrawTriangle(float xScale, float yScale, float xOffset, float yOffset, float invert) const;
+    void drawTriangle(float xScale, float yScale, float xOffset, float yOffset, float invert, float r, float g, float b, float translateY, float
+                      translateX) const;
+    void drawRect(float xScale, float yScale, float xOffset, float yOffset, float r, float g, float b, float translateY, float translateX) const;
 };
 
 
