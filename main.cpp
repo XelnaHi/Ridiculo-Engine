@@ -10,9 +10,7 @@ static constexpr int SCR_WIDTH = 800;
 static constexpr int SCR_HEIGHT = 600;
 
 void error_callback(int error, const char *description);
-
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 bool roofColorShouldChange = false;
@@ -46,59 +44,9 @@ int main() {
         return -1;
     }
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // Set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float houseVertices[] = {
-        // // Roof Left Side, Red
-        // 0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top right
-        // 0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
-        // -0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
-        //
-        // // Roof Right Side, Red
-        // 0.f, 0.8f, 0.0f, 1.0f, 0.f, 0.f, // top left
-        // 0.f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
-        // 0.8f, 0.5f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
-        //
-        // // Front Wall Left Triangle, Black
-        // -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
-        // -0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom left
-        // 0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
-        //
-        // // Front Wall Right Triangle, Black
-        // 0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top right
-        // 0.5f, -0.2f, 0.0f, 0.f, 0.f, 0.f, // bottom right
-        // -0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, // top left
-        //
-        // // Left Window, Left Triangle, Light Blue
-        // -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        // -0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
-        // -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
-        //
-        // // Left Window, Right Triangle, Light Blue
-        // -0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        // -0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
-        // -0.2f, 0.1f, 0.f, 0.f, 0.9f, 1.f, // bottom right
-        //
-        // // Right Window, Left Triangle, Light Blue
-        // 0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        // 0.2f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom left
-        // 0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
-        //
-        // // Right Window, Right Triangle, Light Blue
-        // 0.2f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top left
-        // 0.4f, 0.3f, 0.0f, 0.f, 0.9f, 1.f, // top right
-        // 0.4f, 0.1f, 0.0f, 0.f, 0.9f, 1.f, // bottom right
-        //
-        // // Front Door, Left Triangle, Light Blue
-        // -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
-        // -0.1, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom left
-        // 0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
-        //
-        // // Front Door, Right Triangle, Light Blue
-        // -0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top left
-        // 0.1f, 0.2f, 0.0f, 1.f, 1.f, 1.f, // top right
-        // 0.1f, -0.2f, 0.0f, 1.f, 1.f, 1.f, // bottom right
-
         1.f, 1.f, 0.0f, 1.0f, 0.f, 0.f, // top right
         1.f, 0.f, 0.0f, 1.0f, 0.f, 0.f, // bottom right
         -1.f, 0.f, 0.0f, 1.0f, 0.f, 0.f, // bottom left
@@ -126,7 +74,7 @@ int main() {
     // Question: but why would I want to unbind it?
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens.
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
