@@ -13,7 +13,9 @@ add_subdirectory(external/glfw)
 
 add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         Shader.cpp
-        Shader.h)
+        Shader.h
+        stb/stb_image.h
+        stb/stb_image.cpp)
 
-target_include_directories(RidiculoEngine PRIVATE external/glad/include)
+target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw)

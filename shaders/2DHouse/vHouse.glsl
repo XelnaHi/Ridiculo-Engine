@@ -2,12 +2,11 @@
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
+layout (location = 2) in vec2 aTexCoord;
 
 uniform float u_xOffset;
 uniform float u_yOffset;
 
-uniform int u_xInvert;
-uniform int u_yInvert;
 uniform int u_invert;
 
 uniform float u_xScale;
@@ -15,8 +14,9 @@ uniform float u_yScale;
 
 uniform float u_translateY;
 uniform float u_translateX;
+uniform mat4 u_Transform;
 
-out vec3 roofColor;
+out vec2 TexCoord;
 
 void main() {
 
@@ -34,6 +34,6 @@ void main() {
 
     vec3 scaledPos = vec3(finalX, finalY, aPos.z);
 
-    gl_Position = vec4(scaledPos, 1.0);
-    roofColor = aColor;
+    gl_Position = u_Transform * vec4(scaledPos, 1.0);
+    TexCoord = aTexCoord;
 }
