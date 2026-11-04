@@ -121,22 +121,16 @@ int main()
                 // South Face (front)
         0.0f, 0.5f, 0.0f,       0.5f, 1.0f, // top middle
         -0.5f, 0.0f, 0.5f,      0.0f, 0.0f, // bottom left
-        0.5f, 0.0f, 0.5f,       0.0f, 1.0f, // bottom right
+        0.5f, 0.0f, 0.5f,       1.0f, 0.0f, // bottom right
 
                 // West Face (left)
-        0.0f, 0.5f, 0.0f,       0.5f, 1.0f, // top middle
-        -0.5f, 0.0f, 0.5f,      0.0f, 1.0f, // bottom right
-        -0.5f, 0.0f, -0.5f,     0.0f, 0.0f, // bottom left
+        -0.5f, 0.0f, -0.5f,     1.0f, 0.0f, // bottom left
 
                 // North Face (back)
-        0.0f, 0.5f, 0.0f,       0.5f, 1.0f, // top middle
-        -0.5f, 0.0f, -0.5f,      0.0f, 1.0f, // bottom right
         0.5f, 0.0f, -0.5f,     0.0f, 0.0f, // bottom left
 
                 // East Face (right)
-        0.0f, 0.5f, 0.0f,       0.5f, 1.0f, // top middle
-        0.5f, 0.0f, -0.5f,      0.0f, 1.0f, // bottom right
-        0.5f, 0.0f, 0.5f,     0.0f, 0.0f, // bottom left
+        0.5f, 0.0f, 0.5f,     1.0f, 0.0f, // bottom left
 
                 // Floor Left
         -0.5f, 0.0f, -0.5f,       0.5f, 1.0f, // top left
@@ -149,6 +143,14 @@ int main()
          0.5f, 0.0f, 0.5f,     0.0f, 0.0f, // bottom right
     };
 
+    unsigned int pyramidIndices[] = {
+       0, 1, 2, // South Face
+       0, 1, 3, // West Face
+       0, 3, 4, // North Face
+       0, 4, 5, // East Face
+       3, 1, 5, // Floor Left Face
+       3, 4, 2, // Floor Right Face
+    };
 
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -160,6 +162,9 @@ int main()
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidVertices), pyramidVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(pyramidIndices), pyramidIndices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -242,7 +247,7 @@ int main()
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
