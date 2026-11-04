@@ -2,6 +2,7 @@
 #include <cmath>
 #include <complex>
 #include <iostream>
+#include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -22,6 +23,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
                             GLsizei length, const char* message, const void* userParam);
+void generateSortofSphere(std::vector<float>& vertices, std::vector<unsigned int>& indices, int rings, int slices);
 
 bool roofColorShouldChange = false;
 
@@ -283,6 +285,43 @@ int main()
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 
+    std::vector<float> spherePositions;
+    std::vector<unsigned int> sphereIndices;
+    generateSortofSphere(spherePositions, sphereIndices, 16, 32);
+
+    std::vector<float> sphereVertices; // interleaved: x y z u v
+    for (size_t i = 0; i < spherePositions.size(); i += 3)
+    {
+        float x = spherePositions[i];
+        float y = spherePositions[i + 1];
+        float z = spherePositions[i + 2];
+
+        float u = atan2f(z, x) / (2.0f * 3.14159265f) + 0.5f;
+        float v = asinf(glm::clamp(y, -1.0f, 1.0f)) / 3.14159265f + 0.5f;
+
+        sphereVertices.insert(sphereVertices.end(), { x, y, z, u, v });
+    }
+
+    unsigned int sphereVAO, sphereVBO, sphereEBO;
+    glGenVertexArrays(1, &sphereVAO);
+    glGenBuffers(1, &sphereVBO);
+    glGenBuffers(1, &sphereEBO);
+
+    glBindVertexArray(sphereVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+    glBufferData(GL_ARRAY_BUFFER, sphereVertices.size() * sizeof(float), sphereVertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereIndices.size() * sizeof(unsigned int), sphereIndices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
     // Rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
     glfwSwapInterval(1);
 
@@ -342,6 +381,19 @@ int main()
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
         glDrawArrays(GL_TRIANGLES, 0, 72);
+
+        glBindVertexArray(sphereVAO);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,glm::vec3(0.0f, -0.7f, 0.0f));
+        model = glm::translate(model,(float)sin(glfwGetTime()) * glm::vec3(-0.3f, 0.0, 0.0f));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+        modelLoc = glGetUniformLocation(houseShader.ID, "u_model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+
+        glDrawElements(GL_TRIANGLES, (GLsizei)sphereIndices.size(), GL_UNSIGNED_INT, 0);
+
+
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
         // After all rendering commands are done, we swap the buffers.

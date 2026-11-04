@@ -15,7 +15,9 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         Shader.cpp
         Shader.h
         stb/stb_image.h
-        stb/stb_image.cpp)
+        stb/stb_image.cpp
+        math_3d.h
+        generate_sphere_fixed_ccw.cpp)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw)
