@@ -154,70 +154,68 @@ int main()
        3, 4, 2, // Floor Right Face
     };
 
+        unsigned int cubeIndices[] = {
+        0, 1, 2, // South Left T
+        0, 2, 3, // South Right T
+
+        0, 1, 4, // West Right T
+        1, 4, 5, // West Left T
+
+        4, 5, 6, // North Right T
+        4, 6, 7, // North Left T
+
+        3, 6, 7, // East Right T
+        2, 3, 6, // East Left T
+        //
+        3, 4, 7, // Top Right T
+        3, 4, 0, // Top Left T
+        //
+        2, 5, 6, // Bottom Right T
+        1, 2, 5 // Bottom Left T
+    };
+
     float cubeVertices[] = {
         // position             // texture
                     // South Left T
         -0.5f, 0.5f, 0.5f,      0.0f, 1.0f, // top left
         -0.5f, -0.5f, 0.5f,      0.0f, 0.0f, // bottom left
         0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
-
-                    // South Right T
-        -0.5f, 0.5f, 0.5f,      0.0f, 1.0f, // top left
-        0.5f, 0.5f, 0.5f,       1.0f, 1.0f,  // top right
-        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
-
-                    // West Left T
+        //
+        //             // South Right T
+        0.5f, 0.5f, 0.5f,       0.0f, 1.0f,  // top right
+        //
+        //             // West Right T
         -0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // top left
+        //
+        //              // West Left T
         -0.5f, -0.5f, -0.5f,      0.0f, 0.0f, // bottom left
-        -0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
-
-                    // West Right T
-        -0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // top left
-        -0.5f, 0.5f, 0.5f,       1.0f, 1.0f, // top right
-        -0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
-
-                    // North Left T
-        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left
-        -0.5f, -0.5f, -0.5f,     0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, -0.5f,      1.0f, 0.0f, // bottom right
-
-                    // North Right T
-        -0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // top left
-        0.5f, 0.5f, -0.5f,      1.0f, 1.0f, // top right
-        0.5f, -0.5f, -0.5f,      1.0f, 0.0f, // bottom right
-
-                    // East Left T
-        0.5f, 0.5f, 0.5f,       0.0f, 1.0f, // top left
-        0.5f, -0.5f, 0.5f,       0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, -0.5f,     1.0f, 0.0f, // bottom right
+        //
+        //              // North Right T
+        0.5f, -0.5f, -0.5f,      0.0f, 1.0f, // bottom right
+        //
+        //             // North Left T
+        0.5f, 0.5f, -0.5f,     0.0f, 0.0f, // top right
 
                     // East Right T
-        0.5f, 0.5f, 0.5f,       0.0f, 1.0f, // top left
-        0.5f, 0.5f, -0.5f,      1.0f, 1.0f, // top right
-        0.5f, -0.5f, -0.5f,     1.0f, 0.0f, // bottom right
+        /* ------ No additional vertices needed */
+
+                    // East Left T
+        /* ------ No additional vertices needed */
 
                     // Top Left T
-        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left
-        -0.5f, 0.5f, 0.5f,      0.0f, 0.0f, // bottom left
-        0.5f, 0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+        /* ------ No additional vertices needed */
 
                     // Top Right T
-        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left
-        0.5f, 0.5f, -0.5f,      1.0f, 1.0f, // top right
-        0.5f, 0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+        /* ------ No additional vertices needed */
 
                     // Bottom Left T
-        -0.5f, -0.5f, -0.5f,     0.0f, 1.0f, // top left
-        -0.5f, -0.5f, 0.5f,      0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+        /* ------ No additional vertices needed */
 
                     // Bottom Right T
-        -0.5f, -0.5f, -0.5f,     0.0f, 1.0f, // top left
-        0.5f, -0.5f, -0.5f,      1.0f, 1.0f, // top right
-        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
-
+        /* ------ No additional vertices needed */
 
     };
+
 
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -272,11 +270,14 @@ int main()
     unsigned int VAO_TWO, VBO_TWO, EBO_TWO;
     glGenVertexArrays(1, &VAO_TWO);
     glGenBuffers(1, &VBO_TWO);
+    glGenBuffers(1, &EBO_TWO);
     glBindVertexArray(VAO_TWO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO_TWO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_TWO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -372,7 +373,8 @@ int main()
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
-        model = glm::scale(model, (float)sin(glfwGetTime()) * glm::vec3(0.3f, 0.3f, 0.3f));
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        // model = glm::scale(model, (float)sin(glfwGetTime()) * glm::vec3(0.3f, 0.3f, 0.3f));
         model = glm::rotate(model,  glm::radians(-50.0f), glm::vec3(1.0f, 1.0f, 0.0f));
         modelLoc = glGetUniformLocation(houseShader.ID, "u_model");
 
@@ -380,7 +382,7 @@ int main()
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-        glDrawArrays(GL_TRIANGLES, 0, 72);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(sphereVAO);
         model = glm::mat4(1.0f);
