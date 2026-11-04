@@ -152,6 +152,71 @@ int main()
        3, 4, 2, // Floor Right Face
     };
 
+    float cubeVertices[] = {
+        // position             // texture
+                    // South Left T
+        -0.5f, 0.5f, 0.5f,      0.0f, 1.0f, // top left
+        -0.5f, -0.5f, 0.5f,      0.0f, 0.0f, // bottom left
+        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // South Right T
+        -0.5f, 0.5f, 0.5f,      0.0f, 1.0f, // top left
+        0.5f, 0.5f, 0.5f,       1.0f, 1.0f,  // top right
+        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // West Left T
+        -0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // top left
+        -0.5f, -0.5f, -0.5f,      0.0f, 0.0f, // bottom left
+        -0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // West Right T
+        -0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // top left
+        -0.5f, 0.5f, 0.5f,       1.0f, 1.0f, // top right
+        -0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // North Left T
+        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left
+        -0.5f, -0.5f, -0.5f,     0.0f, 0.0f, // bottom left
+        0.5f, -0.5f, -0.5f,      1.0f, 0.0f, // bottom right
+
+                    // North Right T
+        -0.5f, 0.5f, -0.5f,      0.0f, 1.0f, // top left
+        0.5f, 0.5f, -0.5f,      1.0f, 1.0f, // top right
+        0.5f, -0.5f, -0.5f,      1.0f, 0.0f, // bottom right
+
+                    // East Left T
+        0.5f, 0.5f, 0.5f,       0.0f, 1.0f, // top left
+        0.5f, -0.5f, 0.5f,       0.0f, 0.0f, // bottom left
+        0.5f, -0.5f, -0.5f,     1.0f, 0.0f, // bottom right
+
+                    // East Right T
+        0.5f, 0.5f, 0.5f,       0.0f, 1.0f, // top left
+        0.5f, 0.5f, -0.5f,      1.0f, 1.0f, // top right
+        0.5f, -0.5f, -0.5f,     1.0f, 0.0f, // bottom right
+
+                    // Top Left T
+        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left
+        -0.5f, 0.5f, 0.5f,      0.0f, 0.0f, // bottom left
+        0.5f, 0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // Top Right T
+        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left
+        0.5f, 0.5f, -0.5f,      1.0f, 1.0f, // top right
+        0.5f, 0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // Bottom Left T
+        -0.5f, -0.5f, -0.5f,     0.0f, 1.0f, // top left
+        -0.5f, -0.5f, 0.5f,      0.0f, 0.0f, // bottom left
+        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+                    // Bottom Right T
+        -0.5f, -0.5f, -0.5f,     0.0f, 1.0f, // top left
+        0.5f, -0.5f, -0.5f,      1.0f, 1.0f, // top right
+        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right
+
+
+    };
+
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -202,6 +267,22 @@ int main()
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
+    unsigned int VAO_TWO, VBO_TWO, EBO_TWO;
+    glGenVertexArrays(1, &VAO_TWO);
+    glGenBuffers(1, &VBO_TWO);
+    glBindVertexArray(VAO_TWO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_TWO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
     // Rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
     glfwSwapInterval(1);
 
@@ -225,30 +306,42 @@ int main()
         glUniform1i(glGetUniformLocation(houseShader.ID, "u_Texture"), 0);
 
         glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(1.0f, 0.0f, -1.0f));
+        model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        // model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
 
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
+        //
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
-
+        //
         int modelLoc = glGetUniformLocation(houseShader.ID, "u_model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
+        //
         int viewLoc = glGetUniformLocation(houseShader.ID, "u_view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
-        // Projection rarely changes, which is why best practice is to set the uniform once outside the render loop.
-        // I'm keeping it here for now for quicker readability while practicing matrices.
+        // // Projection rarely changes, which is why best practice is to set the uniform once outside the render loop.
+        // // I'm keeping it here for now for quicker readability while practicing matrices.
         int projLoc = glGetUniformLocation(houseShader.ID, "u_projection");
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
 
-
         glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
+        glBindVertexArray(VAO_TWO);
+        glUniform1i(glGetUniformLocation(houseShader.ID, "u_Texture"), 0);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
+        model = glm::scale(model, (float)sin(glfwGetTime()) * glm::vec3(0.3f, 0.3f, 0.3f));
+        model = glm::rotate(model,  glm::radians(-50.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+        modelLoc = glGetUniformLocation(houseShader.ID, "u_model");
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+
+        glDrawArrays(GL_TRIANGLES, 0, 72);
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
         // After all rendering commands are done, we swap the buffers.
