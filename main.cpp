@@ -372,10 +372,24 @@ int main() {
 
         // Set the matrices to identity matrices in order to give them clean slates. If we dont, we risk using old matrix values
         // which can skew our transformation matrices as we start applying translation, rotation and scale.
+
+        // Local space = coordinate space local to the object
+        // World space = coordinates relative to a shared game world origin
+        // View space = often referred to as the camera. This is the result of transforming world space coordinates into coordinates that are in front of the users view.
+        // Clip space = refers to the space within which fragments are eligible for rendering. Coordinates outside of this range are not rendered, ie clipped. Working with coordinates within the range [-1, 1] is generally considered unintuitive which is why we use a projection matrix to specify an easier-to-work-with range for each axis, ie [600, 800] which the projection matrix then converts to NDC coordinates. Coordinates outside of this custom range (for example [650, 550]) is thus mapped to be outside of the range [-1,1] and is subsequently not rendered on screen (clipped). The viewing box that projection creates is called a frustum. Once all vertices have been mapped to clip space the vertex shader performs the perspective division, meaning it divides the x, y and z components by the vector's homogenous w component. After this, the resulting coordinates are mapped to screen coordinates by using the dimensions set in glViewport(width, height) which then gets turned into fragments.
+
+        // Orthographic projection = a cube-like frustum defined by a near-plane, far-plane, width, height and length. Coordinates in front of the near plane, and coordinates behind the far plane are clipped. This type of projection doesn't touch the w component which means that if the w remains = 1.0f, x, y and z components will remain intact during perspective division. This projection mode is usually used for 2D rendering.
+
+        // Perspective projection = we can roughly describe perspective as objects appearing smaller the further away they are from us, as well as objects appearing as if coinciding, or "travelling towards"  a shared point in the distance. Perspective projection mimics this by increasing the value of the w component the further away an object is from the origin. When perspective division happens, this means that x, y and z coordinates are scaled based on the value of the w component. Perspective projection defines a clip space within the range of [-w, w]. Coordinates outside of this range fall outside of the mapped-to NDC coordinates, and are thus not rendered.
+
+        // Similarly to orthographic projection, perspective projection creates a frustum with a near and far plane, with the caveat that this frustum is non-uniform (whereas the ortho proj is uniformly cube-like) and includes a field of view specified in radians or degrees. Furthermore, it uses an aspect ratio equal to width divided by height.
+
+
+
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
-        // I need to research view and perspective more to fully understand it.
+        // This is essentially our camera. After having applied the model matrix, the view matrix is applied, translating all objects 4 units away from the "camera", creating a sense of distance.
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
 
         // IMPORTANT MENTAL NOTE!!
@@ -399,13 +413,13 @@ int main() {
         // Scale the first pyramid over time. No clamping is done which means that as we swing back towards <0, the pyramid will be inverted.
         model = glm::scale(model, (float)sin(glfwGetTime()) * glm::vec3(1.0f, 1.0f, 1.0f));
 
-        // Apply the model matrix as a uniform
+        // Send matrix model value from CPU --> GPU model uniform
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        // Apply the view uniform
+        // Send view matrix value from CPU --> GPU view unifrom
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
-        // Draw the first pyramid
+        // Draw the first pyramid (GPU)
         glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
         // Reset model matrix to identity. I dont want leftover matrix values to affect the new transform matrix
