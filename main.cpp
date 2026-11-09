@@ -9,7 +9,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include "Shader.h"
+#include "assimp/version.h"
 #include "stb/stb_image.h"
 
 static constexpr int SCR_WIDTH = 800;
@@ -40,6 +45,10 @@ int main() {
         std::cout << "Failed to initialize GLFW" << std::endl;
         return -1;
     }
+
+    // Check that Assimp was included correctly
+    Assimp::Importer importer;
+    std::cout << "Assimp OK, version " << aiGetVersionMajor() << "." << aiGetVersionMinor() << std::endl;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
