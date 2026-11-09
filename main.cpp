@@ -72,130 +72,54 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
 
-    // Set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    float houseVertices[] = {
-        //positions         // colors           // texture coords
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-    };
-
     float pyramidVertices[] = {
         //positon               //texture
         // South Face (front)
-        0.0f, 0.5f, 0.0f, 0.5f, 1.0f, // top middle
-        -0.5f, 0.0f, 0.5f, 0.0f, 0.0f, // bottom left
-        0.5f, 0.0f, 0.5f, 1.0f, 0.0f, // bottom right
+        0.0f, 0.5f, 0.0f,       0.5f, 1.0f, // top middle
+        0.5f, 0.0f, 0.5f,       1.0f, 0.0f, // bottom right
+        -0.5f, 0.0f, 0.5f,      0.0f, 0.0f, // bottom left
 
         // West Face (left)
-        -0.5f, 0.0f, -0.5f, 1.0f, 0.0f, // bottom left
+        -0.5f, 0.0f, -0.5f,     1.0f, 0.0f, // bottom left
 
         // North Face (back)
-        0.5f, 0.0f, -0.5f, 0.0f, 0.0f, // bottom left
+        0.5f, 0.0f, -0.5f,      0.0f, 0.0f, // bottom left
 
         // East Face (right)
-        0.5f, 0.0f, 0.5f, 1.0f, 0.0f, // bottom left
-
-        // Floor Left
-        -0.5f, 0.0f, -0.5f, 0.5f, 1.0f, // top left
-        -0.5f, 0.0f, 0.5f, 0.0f, 1.0f, // bottom left
-        0.5f, 0.0f, 0.5f, 0.0f, 0.0f, // bottom right
-
-        // Floor Right
-        -0.5f, 0.0f, -0.5f, 0.5f, 1.0f, // top left
-        0.5f, 0.0f, -0.5f, 0.0f, 1.0f, // top right
-        0.5f, 0.0f, 0.5f, 0.0f, 0.0f, // bottom right
+        0.5f, 0.0f, -0.5f,       1.0f, 0.0f, // bottom left
     };
 
     unsigned int pyramidIndices[] = {
-        0, 1, 2, // South Face
-        0, 1, 3, // West Face
-        0, 3, 4, // North Face
-        0, 4, 5, // East Face
-        3, 1, 5, // Floor Left Face
-        3, 4, 2, // Floor Right Face
+        0, 2, 1, // South Face
+        0, 3, 2, // West Face
+        0, 4, 3, // North Face
+        0, 1, 4, // East Face
+        1, 2, 3, // Floor Left Face
+        1, 3, 4, // Floor Right Face
     };
 
-    unsigned int cubeIndices[] = {
-        0, 1, 2, // South Left T
-        0, 2, 3, // South Right T
-
-        0, 1, 4, // West Right T
-        1, 4, 5, // West Left T
-
-        4, 5, 6, // North Right T
-        4, 6, 7, // North Left T
-
-        3, 6, 7, // East Right T
-        2, 3, 6, // East Left T
-        //
-        3, 4, 7, // Top Right T
-        3, 4, 0, // Top Left T
-        //
-        2, 5, 6, // Bottom Right T
-        1, 2, 5 // Bottom Left T
-    };
 
     float cubeVertices[] = {
         // position             // texture
         // South Left T
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, // top left
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom right
+        -0.5f, 0.5f, 0.5f,      0.0f, 1.0f, // top left // 0
+        -0.5f, -0.5f, 0.5f,     0.0f, 0.0f, // bottom left // 1
+        0.5f, -0.5f, 0.5f,      1.0f, 0.0f, // bottom right // 2
         //
         //             // South Right T
-        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, // top right
+        0.5f, 0.5f, 0.5f,       0.0f, 1.0f, // top right // 3
         //
         //             // West Right T
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top left
+        -0.5f, 0.5f, -0.5f,     0.0f, 1.0f, // top left // 4
         //
         //              // West Left T
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom left
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f, // bottom left // 5
         //
         //              // North Right T
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom right
+        0.5f, -0.5f, -0.5f,     0.0f, 1.0f, // bottom right // 6
         //
         //             // North Left T
-        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, // top right
+        0.5f, 0.5f, -0.5f,      0.0f, 0.0f, // top right // 7
 
         // East Right T
         /* ------ No additional vertices needed */
@@ -217,6 +141,25 @@ int main() {
 
     };
 
+    unsigned int cubeIndices[] = {
+        0, 1, 2, // South Left T
+        3, 0, 2, // South Right T
+
+        0, 4, 1, // West Right T
+        4, 5, 1, // West Left T
+
+        4, 6, 5, // North Right T
+        4, 7, 6, // North Left T
+
+        7, 3, 6, // East Right T
+        3, 2, 6, // East Left T
+        //
+        7, 4, 3, // Top Right T
+        3, 4, 0, // Top Left T
+        //
+        1, 5, 2, // Bottom Right T
+        2, 5, 6 // Bottom Left T
+    };
 
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -242,7 +185,7 @@ int main() {
     glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); // flips the texture coordinates as it surpassed 1.0 (1.2 becomes the original 0.8 texture coordinate. At 2.0, we're back to the original 0.0 texture coordinate)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -284,21 +227,9 @@ int main() {
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 
-    std::vector<float> spherePositions;
+    std::vector<float> sphereVertices;
     std::vector<unsigned int> sphereIndices;
-    generateSortofSphere(spherePositions, sphereIndices, 16, 32);
-
-    std::vector<float> sphereVertices; // interleaved: x y z u v
-    for (size_t i = 0; i < spherePositions.size(); i += 3) {
-        float x = spherePositions[i];
-        float y = spherePositions[i + 1];
-        float z = spherePositions[i + 2];
-
-        float u = atan2f(z, x) / (2.0f * 3.14159265f) + 0.5f;
-        float v = asinf(glm::clamp(y, -1.0f, 1.0f)) / 3.14159265f + 0.5f;
-
-        sphereVertices.insert(sphereVertices.end(), {x, y, z, u, v});
-    }
+    generateSortofSphere(sphereVertices, sphereIndices, 16, 32);
 
     unsigned int sphereVAO, sphereVBO, sphereEBO;
     glGenVertexArrays(1, &sphereVAO);
@@ -328,6 +259,10 @@ int main() {
 
     glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
+
+    // Research cull face
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
     while (!glfwWindowShouldClose(window)) {
@@ -428,9 +363,12 @@ int main() {
         // Apply translation to the identity matrix
         model = glm::translate(model, glm::vec3(1.0f, 0.2f, 0.0f));
 
-        // Rotate the pyramid 50degrees around the y-axis consistently over time and 25 degrees around the z-axis
-        // Apply rotation to the translation matrix
-        model = glm::rotate(model, (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.5f));
+        // Rotate the model 50 degrees per second around the axis (0, 1, 0.5) after glm has normalized it.
+        // glfwGetTime increases over time, increasing the angle we rotate.
+        // glm::radians(x) returns the radian representation of degrees.
+        // Radians: 1 full turn (360deg) is = 2 * PI.
+        // 50 degrees can be thought of as 50/360, roughly equaling 1/7th of a turn. After 2 seconds, we have rotated 100 degrees around the normalized (0, 1, 0.5) axis)
+        model = glm::rotate(model, (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
         // Apply the matrix values to the model uniform
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
