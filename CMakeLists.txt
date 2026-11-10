@@ -30,7 +30,12 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         stb/stb_image.h
         stb/stb_image.cpp
         math_3d.h
-        generate_sphere_fixed_ccw.cpp)
+        generate_sphere_fixed_ccw.cpp
+        model_loader/Mesh.cpp
+        model_loader/Mesh.h
+        model_loader/Model.cpp
+        model_loader/Model.cpp
+        model_loader/Model.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)
