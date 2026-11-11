@@ -61,8 +61,14 @@ void Mesh::draw(Shader &shader) {
 
         // Here we specify which texture handle goes into the previously activated texture unit. I gather that the reason we have to do this for textures, but not for, say, VBO's, is that which VBO is bound is a global state limited to a single "slot", while textures can be bound to 1 of at least 16 texture slots (depends on the driver).
         glBindTexture(GL_TEXTURE_2D, textures[i].ID);
-
     }
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    // always good practice to set everything back to defaults once configured.
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::setupMesh() {

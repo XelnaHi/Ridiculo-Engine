@@ -22,7 +22,7 @@ struct Vertex {
 struct Texture {
     unsigned int ID;
     std::string Type;
-    aiString Path;
+    std::string Path;
 };
 
 

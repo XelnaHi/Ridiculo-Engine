@@ -7,22 +7,23 @@
 #include <string>
 #include <vector>
 
+#include "Mesh.h"
 #include "assimp/scene.h"
 
 
-struct Texture;
 class Mesh;
 class Shader;
 
 class Model {
 public:
-    Model(char *path);
+    Model(const std::string &path);
 
     void draw(Shader& shader);
 
 private:
     std::vector<Mesh> meshes;
     std::string directory;
+    std::vector<Texture> textures_loaded;
 
     void loadModel(std::string path);
 

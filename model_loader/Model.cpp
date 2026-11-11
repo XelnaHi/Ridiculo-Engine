@@ -19,7 +19,7 @@
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
 
-Model::Model(char *path) {
+Model::Model(const std::string &path) {
     loadModel(path);
 }
 
@@ -150,16 +150,45 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
         // Retrieves the file location of the currently iterated over texture. Stores the result in 'str'.
         mat->GetTexture(type, i, &str);
 
-        Texture texture;
-        texture.ID = TextureFromFile(str.C_Str(), directory); // Helper function that loads the texture and returns the texture ID.
-        texture.Type = typeName;
-        texture.Path = str;
-        textures.push_back(texture);
+        bool skip = false;
+        for (unsigned int j = 0; j < textures_loaded.size(); j++) {
+            // strcmp(..) compares two null-terminated strings and returns 0 if they are equal, or a negative value if the first string precedes the second, and a positive value if the first string follows the second.
+            // The comparison is case-sensitive and is basd on the ASCII values of the characters. Returns undefined behavior if one at least one of the strings is not a pointer to a null-terminated string.
+            if (std::strcmp(textures_loaded[j].Path.data(), str.C_Str()) == 0) {
+                // Strings were equal, meaning the texture has already been loaded. Store the loaded texture string.
+                textures.push_back(textures_loaded[j]);
+                skip = true;
+                break;
+            }
+        }
+
+        if (!skip) {
+            Texture texture;
+
+            // Helper function that loads the texture and returns the texture ID.
+            texture.ID = TextureFromFile(str.C_Str(), directory);
+
+            texture.Type = typeName;
+            texture.Path = str.C_Str();
+
+            textures.push_back(texture);
+            textures_loaded.push_back(texture);
+        }
     }
 
     return textures;
 }
 
+/*
+ * This helper function that loads a texture file from a folder assumes that the texture file is located relative to where the model is.
+ * Below is an example of how the texture reader expects the .obj, .mtl and textures are expected to be placed;
+ * - models/backpack/backpack.obj
+ * - models/backpack/backpack.mtl
+ * - models/backpack/normal.jpg
+ * - models/backpack/normal.diffuse
+ * - models/backpack/normal.roughness
+ * - etc
+ */
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
