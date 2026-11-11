@@ -35,7 +35,13 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         model_loader/Mesh.h
         model_loader/Model.cpp
         model_loader/Model.cpp
-        model_loader/Model.h)
+        model_loader/Model.h
+        custom_obj_loader/CustomMesh.cpp
+        custom_obj_loader/CustomMesh.h
+        custom_obj_loader/Renderer.cpp
+        custom_obj_loader/Renderer.h
+        custom_obj_loader/OBJLoader.cpp
+        custom_obj_loader/OBJLoader.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)
