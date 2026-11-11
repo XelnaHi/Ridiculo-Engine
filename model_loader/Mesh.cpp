@@ -42,6 +42,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 void Mesh::draw(Shader &shader) {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
+    unsigned int normalNr = 1;
 
     for (int i = 0; i < textures.size(); ++i) {
         glActiveTexture(GL_TEXTURE0 + i); // Activate the correct texture unit before binding.
@@ -54,10 +55,12 @@ void Mesh::draw(Shader &shader) {
             // the (value++) operator doesn't actually increment the value until the execution has finished, meaning we will fetch the element at index 0 (on first iteration), and will only update the number value to be = 1 after the assignment has finished. Next iteration, we will fetch the element at index 1, and update the number to 2 after assignment has completed.
         } else if (name == "texture_specular") {
             number = std::to_string(specularNr++);
+        } else if (name == "texture_normal") {
+            number = std::to_string(normalNr++);
         }
 
         // Apparently string concatenation casts the result to a c-style string.
-        shader.setInt("material." + name + number, i);
+        shader.setInt(name + number, i);
 
         // Here we specify which texture handle goes into the previously activated texture unit. I gather that the reason we have to do this for textures, but not for, say, VBO's, is that which VBO is bound is a global state limited to a single "slot", while textures can be bound to 1 of at least 16 texture slots (depends on the driver).
         glBindTexture(GL_TEXTURE_2D, textures[i].ID);
