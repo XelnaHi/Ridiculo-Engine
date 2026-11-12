@@ -8,8 +8,9 @@
 
 #include <glm/glm.hpp>
 
-
+class Model;
 class Shader;
+
 
 class Renderer {
 public:

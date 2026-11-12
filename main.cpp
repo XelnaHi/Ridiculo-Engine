@@ -39,6 +39,7 @@ glm::mat4 projection = glm::mat4(1.0f);
 bool isPerspective = false;
 bool isProjectionDirty = true;
 
+bool shouldUseCustomObjLoader = true;
 
 int main() {
     glfwSetErrorCallback(error_callback);
@@ -100,20 +101,28 @@ int main() {
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    // Model backpackModel("models/backpack/backpack.obj");
-    Model backpackModel("models/suzanne/Suzanne.obj");
+    // OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
+    // OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
+    // OBJLoader::LoadMesh("models/backpack/backpack.obj");
+    // OBJLoader::LoadMesh("models/mcCree/mccreescetchfab.obj");
+    // OBJLoader::LoadMesh("models/car/car.obj");
+    // OBJLoader::LoadMesh("models/phoenix_bird/phoenix_bird.obj");
 
-    CustomMesh* customSuzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
-    CustomMesh* customCachedSuzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
-    CustomMesh* customBackpack = OBJLoader::LoadMesh("models/backpack/backpack.obj");
-    CustomMesh* customMcCree = OBJLoader::LoadMesh("models/mcCree/mccreescetchfab.obj");
-    CustomMesh* customCar = OBJLoader::LoadMesh("models/car/car.obj");
-    CustomMesh* customPhoenix = OBJLoader::LoadMesh("models/phoenix_bird/phoenix_bird.obj");
+    Model assimpSuzanne("models/suzanne/Suzanne.obj");
+    Model assimpCachedSuzanne("models/suzanne/Suzanne.obj");
+    Model assimpBackpack("models/backpack/backpack.obj");
+    Model assimpMcCree("models/mcCree/mccreescetchfab.obj");
+    Model assimpCar("models/car/car.obj");
+    Model assimpPhoenix("models/phoenix_bird/phoenix_bird.obj");
+
 
     // Only using one shader right now, so cache the view uniform
     suzanneShader.use();
     glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f));
     glUniformMatrix4fv(glGetUniformLocation(suzanneShader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
+
+    houseShader.use();
+    glUniformMatrix4fv(glGetUniformLocation(houseShader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
 
     while (!glfwWindowShouldClose(window)) {
         // input is registered as a callback as part of the programs init phase
@@ -124,7 +133,6 @@ int main() {
         // Clears the previous buffer of it's color/depth values. If we dont, we                                                            risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        suzanneShader.use();
 
         // Checks if we have pressed the keybind indicating that we want to switch projection modes
         if (isProjectionDirty) {
@@ -166,8 +174,6 @@ int main() {
         // Similarly to orthographic projection, perspective projection creates a frustum with a near and far plane, with the caveat that this frustum is non-uniform (whereas the ortho proj is uniformly cube-like) and includes a field of view specified in radians or degrees. Furthermore, it uses an aspect ratio equal to width divided by height.
 
 
-        glm::mat4 model = glm::mat4(1.0f);
-
         // This is essentially our camera. After having applied the model matrix, the view matrix is applied, translating all objects 4 units away from the "camera", creating a sense of distance.
 
         // IMPORTANT MENTAL NOTE!!
@@ -175,33 +181,61 @@ int main() {
 
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
+
         auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
         auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
         constexpr float rotation = 50.0f;
-        const float rotationOverTime = (float)glfwGetTime() * rotation;
-        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
+        const float rotationOverTime = (float) glfwGetTime() * rotation;
+
+        // Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
+        //
+        // pos = glm::vec3(-0.5f, 0.5f, -0.5f);
+        // scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        // Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
+        //
+        // pos = glm::vec3(1.5f, 0.9f, -0.5f);
+        // scale = glm::vec3(0.3f, 0.3f, 0.3f);
+        // Renderer::RenderObj("models/backpack/backpack.obj", suzanneShader, pos, rotationOverTime, scale);
+        //
+        // pos = glm::vec3(-1.5f, 0.4f, -0.5f);
+        // scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        // Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, rotationOverTime, scale);
+        //
+        // pos = glm::vec3(-1.5f, -1.2f, -0.5f);
+        // scale = glm::vec3(0.003f, 0.003f, 0.003f);
+        // Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, rotationOverTime, scale);
+        //
+        // pos = glm::vec3(1.5f, -1.4f, -0.5f);
+        // scale = glm::vec3(0.003f, 0.003f, 0.003f);
+        // Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, rotationOverTime, scale);
+
+
+        pos = glm::vec3(0.0f, 0.0f, 0.0f);
+        scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        assimpSuzanne.drawTest("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
 
         pos = glm::vec3(-0.5f, 0.5f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
+        assimpCachedSuzanne.drawTest("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
 
         pos = glm::vec3(1.5f, 0.9f, -0.5f);
         scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        Renderer::RenderObj("models/backpack/backpack.obj", suzanneShader, pos, rotationOverTime, scale);
+        assimpBackpack.drawTest("models/backpack/backpack.obj", houseShader, pos, rotationOverTime, scale);
+
 
         pos = glm::vec3(-1.5f, 0.4f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, rotationOverTime, scale);
+        assimpMcCree.drawTest("models/mcCree/mccreescetchfab.obj", houseShader, pos, rotationOverTime, scale);
+
 
         pos = glm::vec3(-1.5f, -1.2f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, rotationOverTime, scale);
+        assimpCar.drawTest("models/car/car.obj", houseShader, pos, rotationOverTime, scale);
+
 
         pos = glm::vec3(1.5f, -1.4f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, rotationOverTime, scale);
-
-        // backpackModel.draw(houseShader);
+        assimpPhoenix.drawTest("models/phoenix_bird/phoenix_bird.obj", houseShader, pos, rotationOverTime, scale);
 
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.

@@ -16,8 +16,9 @@
 
 int Renderer::drawCalls = 0;
 
-void Renderer::RenderObj(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot,
+void Renderer:: RenderObj(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot,
                          const glm::vec3 &scale) {
+
     CustomMesh* mesh = OBJLoader::GetMesh(name);
 
     if (!mesh) {
@@ -26,12 +27,12 @@ void Renderer::RenderObj(const std::string &name, Shader &shader, const glm::vec
     }
 
     glm::mat4 model(1.0f);
-
     model = glm::translate(model, pos);
     model = glm::rotate(model, glm::radians(rot), glm::vec3(0, 1, 0));
     model = glm::scale(model, scale);
 
     shader.use();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_model"), 1, GL_FALSE, glm::value_ptr(model));
-    mesh->Render(shader);
+    mesh->Render();
 }
+

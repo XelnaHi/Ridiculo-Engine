@@ -8,7 +8,7 @@
 #include "../Shader.h"
 #include "glad/glad.h"
 
-void CustomMesh::Render(Shader &aShader) {
+void CustomMesh::Render() {
     Renderer::drawCalls++;
 
     glBindVertexArray(VAO);

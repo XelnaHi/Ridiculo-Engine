@@ -19,7 +19,7 @@ class Shader;
 
 class CustomMesh {
 public:
-    virtual void Render(Shader &aShader);
+    virtual void Render();
 
     virtual ~CustomMesh();
 

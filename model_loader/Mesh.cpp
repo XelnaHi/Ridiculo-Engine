@@ -6,6 +6,8 @@
 
 #include "glad/glad.h"
 #include "../Shader.h"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 /*
  * Taking the parameters by value and moving them into the members avoids a second copy.
@@ -39,10 +41,19 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
     uniform sampler2D texture_specular1;
     uniform sampler2D texture_specular2;
  */
-void Mesh::draw(Shader &shader) {
+void Mesh::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale) {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
     unsigned int normalNr = 1;
+
+    shader.use();
+
+    glm::mat4 model(1.0f);
+    model = glm::translate(model, pos);
+    model = glm::rotate(model, glm::radians(rot), glm::vec3(0, 1, 0));
+    model = glm::scale(model, scale);
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_model"), 1, GL_FALSE, glm::value_ptr(model));
+
 
     for (int i = 0; i < textures.size(); ++i) {
         glActiveTexture(GL_TEXTURE0 + i); // Activate the correct texture unit before binding.

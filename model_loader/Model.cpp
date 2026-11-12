@@ -15,6 +15,11 @@
 #include <assimp/postprocess.h>
 
 #include "../stb/stb_image.h"
+#include "glm/gtc/matrix_transform.hpp"
+
+static int modelNr;
+
+std::unordered_map<std::string, Model *> Model::cachedModels;
 
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
@@ -23,13 +28,35 @@ Model::Model(const std::string &path) {
     loadModel(path);
 }
 
-void Model::draw(Shader &shader) {
+void Model::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale) {
     for (unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].draw(shader);
+        meshes[i].draw(shader, pos, rot, scale);
     }
 }
 
-void Model::loadModel(std::string path) {
+void Model::drawTest(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale) {
+
+    if (!source) {
+        return;
+    }
+
+    for (auto &mesh : source->meshes) {
+        mesh.draw(shader, pos, rot, scale);
+    }
+}
+
+
+void Model::loadModel(const std::string &path) {
+    auto cachedModel = cachedModels.find(path);
+    if (cachedModel != cachedModels.end()) {
+
+        source = cachedModel->second;
+        std::cout << "Loaded cached obj model: " << source->objModelName << std::endl;
+        return;
+    }
+    source = this;
+
+
     Assimp::Importer importer;
     // The below call creates and assigns a scene object that stores all data related to meshes, textures, UV's, and materials.
     // The below call also abstracts away the necessity for per-file-format management we would otherwise have to do when importing a model.
@@ -46,6 +73,11 @@ void Model::loadModel(std::string path) {
 
     directory = path.substr(0, path.find_last_of('/'));
     processNode(scene->mRootNode, scene);
+
+    cachedModels[path] = this;
+    objModelName = scene->mRootNode->mName.C_Str();
+
+    std::cout << "Loaded assimp model: " << scene->mRootNode->mName.C_Str() << std::endl;
 }
 
 /*
@@ -180,6 +212,12 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
     }
 
     return textures;
+}
+
+Model *Model::GetModel(const std::string &key) {
+    auto cachedModel = cachedModels.find(key);
+
+    return cachedModel != cachedModels.end() ? cachedModel->second : nullptr;
 }
 
 /*
