@@ -19,6 +19,7 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
     // Load the cached mesh if it has already been loaded and stored. Storing happens at the end of this function.
     auto cachedMesh = cachedMeshes.find(filepath);
     if (cachedMesh != cachedMeshes.end() ) {
+        std::cout << "Loaded cached obj model: " << cachedMesh->second->objModelName << std::endl;
         return cachedMesh->second;
     }
 
@@ -28,6 +29,8 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
 
     std::vector<CustomVertex> vertices;
     std::vector<unsigned int> indices;
+
+    std::string objModelName;
 
     std::ifstream file(filepath);
     if (!file.is_open()) {
@@ -55,7 +58,7 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
 
         // TODO: Handle 'o' lines
         if (prefix == "o") {
-            // Do something here. Maybe just print it?
+            ss >> objModelName;
         }
 
         // v = position
@@ -179,6 +182,10 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
 
     CustomMesh* mesh = new CustomMesh();
     mesh->SetupMesh(vertices, indices);
-    // cachedMeshes[filepath] = mesh;
+    cachedMeshes[filepath] = mesh;
+    mesh->objModelName = objModelName;
+
+    std::cout << "Loaded OBJ model: " << objModelName << std::endl;
+
     return mesh;
 }

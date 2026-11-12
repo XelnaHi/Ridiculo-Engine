@@ -4,6 +4,7 @@
 
 #ifndef RIDICULOENGINE_CUSTOMMESH_H
 #define RIDICULOENGINE_CUSTOMMESH_H
+#include <string>
 #include <vector>
 
 #include "glm/glm.hpp"
@@ -24,6 +25,8 @@ public:
 
     void SetupMesh(const std::vector<CustomVertex> &vertices, const std::vector<unsigned int> &indices);
     glm::mat4 transform;
+
+    std::string objModelName;
 
 private:
     // Render data

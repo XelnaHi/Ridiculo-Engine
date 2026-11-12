@@ -102,6 +102,7 @@ int main() {
     Model backpackModel("models/backpack/backpack.obj");
 
     CustomMesh* suzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
+    CustomMesh* cachedSuzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
 
     while (!glfwWindowShouldClose(window)) {
         // input is currently registered as a callback as part of the programs init phase
@@ -188,7 +189,7 @@ int main() {
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
-        suzanne->Render(suzanneShader);
+        cachedSuzanne->Render(suzanneShader);
 
         // backpackModel.draw(houseShader);
 
