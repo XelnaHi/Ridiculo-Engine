@@ -11,8 +11,6 @@
 void CustomMesh::Render(Shader &aShader) {
     Renderer::drawCalls++;
 
-    aShader.use();
-
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 
@@ -22,6 +20,9 @@ void CustomMesh::Render(Shader &aShader) {
 CustomMesh::~CustomMesh() {
 }
 
+/*
+ * Called from the OBJLoader
+ */
 void CustomMesh::SetupMesh(const std::vector<CustomVertex> &vertices, const std::vector<unsigned int> &indices) {
 
     indexCount = static_cast<unsigned int>(indices.size());

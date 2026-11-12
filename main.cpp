@@ -16,6 +16,7 @@
 #include "assimp/version.h"
 #include "custom_obj_loader/CustomMesh.h"
 #include "custom_obj_loader/OBJLoader.h"
+#include "custom_obj_loader/Renderer.h"
 #include "model_loader/Model.h"
 #include "stb/stb_image.h"
 
@@ -99,13 +100,23 @@ int main() {
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    Model backpackModel("models/backpack/backpack.obj");
+    // Model backpackModel("models/backpack/backpack.obj");
+    Model backpackModel("models/suzanne/Suzanne.obj");
 
-    CustomMesh* suzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
-    CustomMesh* cachedSuzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
+    CustomMesh* customSuzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
+    CustomMesh* customCachedSuzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
+    CustomMesh* customBackpack = OBJLoader::LoadMesh("models/backpack/backpack.obj");
+    CustomMesh* customMcCree = OBJLoader::LoadMesh("models/mcCree/mccreescetchfab.obj");
+    CustomMesh* customCar = OBJLoader::LoadMesh("models/car/car.obj");
+    CustomMesh* customPhoenix = OBJLoader::LoadMesh("models/phoenix_bird/phoenix_bird.obj");
+
+    // Only using one shader right now, so cache the view uniform
+    suzanneShader.use();
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f));
+    glUniformMatrix4fv(glGetUniformLocation(suzanneShader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
 
     while (!glfwWindowShouldClose(window)) {
-        // input is currently registered as a callback as part of the programs init phase
+        // input is registered as a callback as part of the programs init phase
 
         // Set the color to use when clearing the frame buffers.
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -139,9 +150,6 @@ int main() {
 
         // Caching the uniform locations. I would like to have this done pre-render-loop, but I'm not sure how. If the shader program
         // is switched to another, the values have to be reset anyway, so I'm not sure if my desired "optimization" is actually viable
-        int modelLoc = glGetUniformLocation(suzanneShader.ID, "u_model");
-        int viewLoc = glGetUniformLocation(suzanneShader.ID, "u_view");
-
 
         // Set the matrices to identity matrices in order to give them clean slates. If we dont, we risk using old matrix values
         // which can skew our transformation matrices as we start applying translation, rotation and scale.
@@ -158,38 +166,40 @@ int main() {
         // Similarly to orthographic projection, perspective projection creates a frustum with a near and far plane, with the caveat that this frustum is non-uniform (whereas the ortho proj is uniformly cube-like) and includes a field of view specified in radians or degrees. Furthermore, it uses an aspect ratio equal to width divided by height.
 
 
-        glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
         // This is essentially our camera. After having applied the model matrix, the view matrix is applied, translating all objects 4 units away from the "camera", creating a sense of distance.
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
 
         // IMPORTANT MENTAL NOTE!!
         // I keep mixing up application of rotation, scale and translation when multiplying a transformation matrix with a vector, and the act of *building the transformation itself*. Depending on what order you multiply the rotation, scale and translation matrices in order to build the transformation matrix does have an impact on the final result due to matrices non-commutative nature.
 
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
+        auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        constexpr float rotation = 50.0f;
+        const float rotationOverTime = (float)glfwGetTime() * rotation;
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
 
-        // Send matrix model value from CPU --> GPU model uniform
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        pos = glm::vec3(-0.5f, 0.5f, -0.5f);
+        scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
 
-        // Send view matrix value from CPU --> GPU view unifrom
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        pos = glm::vec3(1.5f, 0.9f, -0.5f);
+        scale = glm::vec3(0.3f, 0.3f, 0.3f);
+        Renderer::RenderObj("models/backpack/backpack.obj", suzanneShader, pos, rotationOverTime, scale);
 
-        suzanne->Render(suzanneShader);
+        pos = glm::vec3(-1.5f, 0.4f, -0.5f);
+        scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, rotationOverTime, scale);
 
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-0.5f, 0.5f, -0.5f));
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        pos = glm::vec3(-1.5f, -1.2f, -0.5f);
+        scale = glm::vec3(0.003f, 0.003f, 0.003f);
+        Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, rotationOverTime, scale);
 
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-
-        cachedSuzanne->Render(suzanneShader);
+        pos = glm::vec3(1.5f, -1.4f, -0.5f);
+        scale = glm::vec3(0.003f, 0.003f, 0.003f);
+        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, rotationOverTime, scale);
 
         // backpackModel.draw(houseShader);
 

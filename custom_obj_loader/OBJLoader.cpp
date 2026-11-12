@@ -56,7 +56,6 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
          */
         ss >> prefix;
 
-        // TODO: Handle 'o' lines
         if (prefix == "o") {
             ss >> objModelName;
         }
@@ -130,8 +129,8 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
 
                         // --> obj files use 1-based indexing, but we don't in our code, so we subtract 1 from 11 in order to map the 1-based indexing to our 0-based indexing.
                         unsigned int pIdx = std::stoi(s.substr(0, firstSlash)) - 1;
-                        unsigned int uvIdx = 0;
-                        unsigned int nIdx = 0;
+                        int uvIdx = -1;   // -1 means "this vertex has no UV"
+                        int nIdx = -1;    // -1 means "this vertex has no normal"
 
                         // npos equals the maximum value representable by the type size_type, usually indicating 'end of string' or as an error indication used by functions that return a string index.
                         if (firstSlash != std::string::npos) {
@@ -145,7 +144,10 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
                                 // stoi converts the string "20" to a numerical value.
                                 // --> subtract 1 from the numerical value. Once again, this is 1-based indexing mapped to 0-based indexing.
                                 // uvIdx = 19
-                                uvIdx = std::stoi(s.substr(firstSlash + 1, secondSlash - firstSlash - 1)) - 1;
+
+                                size_t uvLen = (secondSlash == std::string::npos) ? std::string::npos
+                                                                                  : secondSlash - firstSlash - 1;
+                                uvIdx = std::stoi(s.substr(firstSlash + 1, uvLen)) - 1;
                             }
                             // Similarly to the above if check, I guess here we are checking that we are not missing a normal?
                             if (secondSlash != std::string::npos) {
@@ -156,8 +158,8 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
                         CustomVertex vertex;
 
                         vertex.position = temp_positions[pIdx];
-                        vertex.normal = temp_normals[nIdx];
-                        vertex.uv = temp_uvs[uvIdx];
+                        vertex.normal = (nIdx >= 0 && nIdx < (int)temp_normals.size()) ? temp_normals[nIdx] : glm::vec3(0.0f, 1.0f, 0.0f);
+                        vertex.uv     = (uvIdx >= 0 && uvIdx < (int)temp_uvs.size())   ? temp_uvs[uvIdx]   : glm::vec2(0.0f);
 
                         int existingIndex = -1;
                         for (size_t j = 0; j < vertices.size(); ++j) {
@@ -188,4 +190,10 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
     std::cout << "Loaded OBJ model: " << objModelName << std::endl;
 
     return mesh;
+}
+
+CustomMesh * OBJLoader::GetMesh(const std::string &key) {
+    auto cachedMesh = cachedMeshes.find(key);
+
+    return cachedMesh != cachedMeshes.end() ? cachedMesh->second : nullptr;
 }

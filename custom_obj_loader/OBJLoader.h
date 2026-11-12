@@ -13,6 +13,7 @@ class CustomMesh;
 class OBJLoader {
     public:
     static CustomMesh* LoadMesh(const std::string& filepath);
+    static CustomMesh* GetMesh(const std::string& key);
 
 private:
     static std::unordered_map<std::string, CustomMesh*> cachedMeshes;
