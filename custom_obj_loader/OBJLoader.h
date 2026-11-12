@@ -5,6 +5,7 @@
 #ifndef RIDICULOENGINE_OBJLOADER_H
 #define RIDICULOENGINE_OBJLOADER_H
 #include <string>
+#include <unordered_map>
 
 
 class CustomMesh;
@@ -12,6 +13,9 @@ class CustomMesh;
 class OBJLoader {
     public:
     static CustomMesh* LoadMesh(const std::string& filepath);
+
+private:
+    static std::unordered_map<std::string, CustomMesh*> cachedMeshes;
 };
 
 

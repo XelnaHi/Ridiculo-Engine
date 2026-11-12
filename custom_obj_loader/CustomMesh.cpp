@@ -5,19 +5,24 @@
 #include "CustomMesh.h"
 
 #include "Renderer.h"
+#include "../Shader.h"
 #include "glad/glad.h"
 
 void CustomMesh::Render(Shader &aShader) {
     Renderer::drawCalls++;
 
+    aShader.use();
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(0);
 }
 
 CustomMesh::~CustomMesh() {
 }
 
-void CustomMesh::SetupMesh(std::vector<CustomVertex> vertices, std::vector<unsigned int> indices) {
+void CustomMesh::SetupMesh(const std::vector<CustomVertex> &vertices, const std::vector<unsigned int> &indices) {
 
     indexCount = static_cast<unsigned int>(indices.size());
 

@@ -3,3 +3,5 @@
 //
 
 #include "Renderer.h"
+
+int Renderer::drawCalls = 0;

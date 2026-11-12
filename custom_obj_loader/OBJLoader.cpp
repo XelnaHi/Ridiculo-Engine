@@ -12,7 +12,16 @@
 
 #include "CustomMesh.h"
 
+std::unordered_map<std::string, CustomMesh*> OBJLoader::cachedMeshes;
+
 CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
+
+    // Load the cached mesh if it has already been loaded and stored. Storing happens at the end of this function.
+    auto cachedMesh = cachedMeshes.find(filepath);
+    if (cachedMesh != cachedMeshes.end() ) {
+        return cachedMesh->second;
+    }
+
     std::vector<glm::vec3> temp_positions;
     std::vector<glm::vec3> temp_normals;
     std::vector<glm::vec2> temp_uvs;
@@ -43,6 +52,11 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
          * The first extraction would extract the token "s" and assign it to our prefix variable. If we extract again, the token "someWord" would be read, with the leading white space skipped.
          */
         ss >> prefix;
+
+        // TODO: Handle 'o' lines
+        if (prefix == "o") {
+            // Do something here. Maybe just print it?
+        }
 
         // v = position
         if (prefix == "v") {
@@ -88,8 +102,10 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
 
             // We don't want to handle faces that only describe lines as opposed to triangles
             if (faceTokens.size() >= 3) {
+                // This pattern is called 'Fan Triangulation'
+                // The formula for how many triangles that will be constructed is: AmountOfFaceTokens - 1 - 1. Given a shape with 6 face tokens, that gives us 4 triangles.
                 for (size_t i = 1; i < faceTokens.size() - 1; i++) {
-                    // This pattern allows us to re-construct internal triangles within a shape, using the first vertex index as the first vertex position for each reconstructed triangle, and only updating the second and third index positions
+                    // This pattern allows us to re-construct triangles within a shape, using the first vertex index as the first vertex position for each reconstructed triangle, and only updating the second and third index positions
                     int triangleIndices[3] = {0, static_cast<int>(i), static_cast<int>(i + 1)};
 
                     for (int k = 0; k < 3; ++k) {
@@ -116,7 +132,6 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
 
                         // npos equals the maximum value representable by the type size_type, usually indicating 'end of string' or as an error indication used by functions that return a string index.
                         if (firstSlash != std::string::npos) {
-
                             // I guess here we make sure that the face token does't look like this "11//1", which would mean that we're missing a uv?
                             if (secondSlash != firstSlash + 1) {
                                 // Example:
@@ -134,9 +149,36 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
                                 nIdx = std::stoi(s.substr(secondSlash + 1)) - 1;
                             }
                         }
+
+                        CustomVertex vertex;
+
+                        vertex.position = temp_positions[pIdx];
+                        vertex.normal = temp_normals[nIdx];
+                        vertex.uv = temp_uvs[uvIdx];
+
+                        int existingIndex = -1;
+                        for (size_t j = 0; j < vertices.size(); ++j) {
+                            if (vertices[j].position == vertex.position &&
+                                vertices[j].normal == vertex.normal &&
+                                vertices[j].uv == vertex.uv) {
+                                existingIndex = (int) j;
+                                break;
+                            }
+                        }
+                        if (existingIndex != -1) {
+                            indices.push_back((unsigned int) existingIndex);
+                        } else {
+                            indices.push_back((unsigned int) vertices.size());
+                            vertices.push_back(vertex);
+                        }
                     }
                 }
             }
         }
     }
+
+    CustomMesh* mesh = new CustomMesh();
+    mesh->SetupMesh(vertices, indices);
+    // cachedMeshes[filepath] = mesh;
+    return mesh;
 }

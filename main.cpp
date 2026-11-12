@@ -14,6 +14,8 @@
 
 #include "Shader.h"
 #include "assimp/version.h"
+#include "custom_obj_loader/CustomMesh.h"
+#include "custom_obj_loader/OBJLoader.h"
 #include "model_loader/Model.h"
 #include "stb/stb_image.h"
 
@@ -86,6 +88,7 @@ int main() {
 
     stbi_set_flip_vertically_on_load(true);
     Shader houseShader("shaders/2DHouse/vHouse.glsl", "shaders/2DHouse/fHouse.glsl");
+    Shader suzanneShader("shaders/Week3/vSuzanne.glsl", "shaders/Week3/fSuzanne.glsl");
 
     glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
@@ -98,6 +101,7 @@ int main() {
 
     Model backpackModel("models/backpack/backpack.obj");
 
+    CustomMesh* suzanne = OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
 
     while (!glfwWindowShouldClose(window)) {
         // input is currently registered as a callback as part of the programs init phase
@@ -108,7 +112,7 @@ int main() {
         // Clears the previous buffer of it's color/depth values. If we dont, we                                                            risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        houseShader.use();
+        suzanneShader.use();
 
         // Checks if we have pressed the keybind indicating that we want to switch projection modes
         if (isProjectionDirty) {
@@ -124,7 +128,7 @@ int main() {
 
             // Set the projection mode. This is unlikely to change dynamically, so we want to refrain from setting this value over and
             // over unless necessary, thus we gate it behind the above if statement.
-            glUniformMatrix4fv(glGetUniformLocation(houseShader.ID, "u_projection"),
+            glUniformMatrix4fv(glGetUniformLocation(suzanneShader.ID, "u_projection"),
                                1, GL_FALSE, glm::value_ptr(projection));
 
             // Our input has been processed and is no longer considered "dirty" (dirty meaning we have a desired change that has not yet
@@ -134,8 +138,8 @@ int main() {
 
         // Caching the uniform locations. I would like to have this done pre-render-loop, but I'm not sure how. If the shader program
         // is switched to another, the values have to be reset anyway, so I'm not sure if my desired "optimization" is actually viable
-        int modelLoc = glGetUniformLocation(houseShader.ID, "u_model");
-        int viewLoc = glGetUniformLocation(houseShader.ID, "u_view");
+        int modelLoc = glGetUniformLocation(suzanneShader.ID, "u_model");
+        int viewLoc = glGetUniformLocation(suzanneShader.ID, "u_view");
 
 
         // Set the matrices to identity matrices in order to give them clean slates. If we dont, we risk using old matrix values
@@ -174,7 +178,19 @@ int main() {
         // Send view matrix value from CPU --> GPU view unifrom
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
-        backpackModel.draw(houseShader);
+        suzanne->Render(suzanneShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-0.5f, 0.5f, -0.5f));
+        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+
+        suzanne->Render(suzanneShader);
+
+        // backpackModel.draw(houseShader);
 
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.

@@ -22,13 +22,13 @@ public:
 
     virtual ~CustomMesh();
 
-    void SetupMesh(std::vector<CustomVertex> vertices, std::vector<unsigned int> indices);
+    void SetupMesh(const std::vector<CustomVertex> &vertices, const std::vector<unsigned int> &indices);
     glm::mat4 transform;
 
 private:
     // Render data
     unsigned int VAO, VBO, EBO;
-    unsigned int indexCount;
+    unsigned int indexCount = 0;
 };
 
 
