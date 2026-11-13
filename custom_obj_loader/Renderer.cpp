@@ -12,14 +12,32 @@
 #include "OBJLoader.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "../Shader.h"
+#include "../model_loader/Model.h"
 #include "glm/gtc/type_ptr.hpp"
 
 int Renderer::drawCalls = 0;
 
-void Renderer:: RenderObj(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot,
+void Renderer::LoadObj(const std::string &path) {
+    if (useCustomLoader) {
+        OBJLoader::LoadMesh(path);
+    } else {
+        Model::Load(path);
+    }
+}
+
+void Renderer::RenderObj(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot,
                          const glm::vec3 &scale) {
 
-    CustomMesh* mesh = OBJLoader::GetMesh(name);
+    if (!useCustomLoader) {
+        Model* model = Model::GetModel(name);
+        if (!model) {
+            std::cout << "[ERROR] Model not found: " << name << std::endl;
+        }
+        model->draw(shader, pos, rot, scale);
+        return;
+    }
+
+    CustomMesh *mesh = OBJLoader::GetMesh(name);
 
     if (!mesh) {
         std::cout << "RenderObj: couldn't find mesh name: " << name << std::endl;
@@ -35,4 +53,3 @@ void Renderer:: RenderObj(const std::string &name, Shader &shader, const glm::ve
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_model"), 1, GL_FALSE, glm::value_ptr(model));
     mesh->Render();
 }
-

@@ -14,13 +14,13 @@
 
 std::unordered_map<std::string, CustomMesh*> OBJLoader::cachedMeshes;
 
-CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
+void OBJLoader::LoadMesh(const std::string &filepath) {
 
     // Load the cached mesh if it has already been loaded and stored. Storing happens at the end of this function.
     auto cachedMesh = cachedMeshes.find(filepath);
     if (cachedMesh != cachedMeshes.end() ) {
         std::cout << "Loaded cached obj model: " << cachedMesh->second->objModelName << std::endl;
-        return cachedMesh->second;
+        return;
     }
 
     std::vector<glm::vec3> temp_positions;
@@ -35,7 +35,7 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
         std::cout << "Failed to load OBJ file: " << filepath << std::endl;
-        return nullptr;
+        return;
     }
 
     std::string line;
@@ -188,8 +188,6 @@ CustomMesh *OBJLoader::LoadMesh(const std::string &filepath) {
     mesh->objModelName = objModelName;
 
     std::cout << "Loaded OBJ model: " << objModelName << std::endl;
-
-    return mesh;
 }
 
 CustomMesh * OBJLoader::GetMesh(const std::string &key) {

@@ -101,19 +101,22 @@ int main() {
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    // OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
-    // OBJLoader::LoadMesh("models/suzanne/Suzanne.obj");
-    // OBJLoader::LoadMesh("models/backpack/backpack.obj");
-    // OBJLoader::LoadMesh("models/mcCree/mccreescetchfab.obj");
-    // OBJLoader::LoadMesh("models/car/car.obj");
-    // OBJLoader::LoadMesh("models/phoenix_bird/phoenix_bird.obj");
+    Renderer::useCustomLoader = true;
 
-    Model assimpSuzanne("models/suzanne/Suzanne.obj");
-    Model assimpCachedSuzanne("models/suzanne/Suzanne.obj");
-    Model assimpBackpack("models/backpack/backpack.obj");
-    Model assimpMcCree("models/mcCree/mccreescetchfab.obj");
-    Model assimpCar("models/car/car.obj");
-    Model assimpPhoenix("models/phoenix_bird/phoenix_bird.obj");
+    if (Renderer::useCustomLoader) {
+        std::cout << "Using custom OBJ loader to load models." << std::endl;
+    }
+    else {
+        std::cout << "Using Assimp to load models." << std::endl;
+    }
+
+    Renderer::LoadObj("models/suzanne/Suzanne.obj");
+    Renderer::LoadObj("models/suzanne/Suzanne.obj");
+    Renderer::LoadObj("models/backpack/backpack.obj");
+    Renderer::LoadObj("models/mcCree/mccreescetchfab.obj");
+    Renderer::LoadObj("models/car/car.obj");
+    Renderer::LoadObj("models/phoenix_bird/phoenix_bird.obj");
+
 
 
     // Only using one shader right now, so cache the view uniform
@@ -123,6 +126,11 @@ int main() {
 
     houseShader.use();
     glUniformMatrix4fv(glGetUniformLocation(houseShader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
+
+
+    auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
+    constexpr float rotation = 50.0f;
 
     while (!glfwWindowShouldClose(window)) {
         // input is registered as a callback as part of the programs init phase
@@ -182,60 +190,35 @@ int main() {
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
 
-        auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
-        auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        constexpr float rotation = 50.0f;
+
         const float rotationOverTime = (float) glfwGetTime() * rotation;
-
-        // Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
-        //
-        // pos = glm::vec3(-0.5f, 0.5f, -0.5f);
-        // scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        // Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
-        //
-        // pos = glm::vec3(1.5f, 0.9f, -0.5f);
-        // scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        // Renderer::RenderObj("models/backpack/backpack.obj", suzanneShader, pos, rotationOverTime, scale);
-        //
-        // pos = glm::vec3(-1.5f, 0.4f, -0.5f);
-        // scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        // Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, rotationOverTime, scale);
-        //
-        // pos = glm::vec3(-1.5f, -1.2f, -0.5f);
-        // scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        // Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, rotationOverTime, scale);
-        //
-        // pos = glm::vec3(1.5f, -1.4f, -0.5f);
-        // scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        // Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, rotationOverTime, scale);
-
 
         pos = glm::vec3(0.0f, 0.0f, 0.0f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        assimpSuzanne.drawTest("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
 
         pos = glm::vec3(-0.5f, 0.5f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        assimpCachedSuzanne.drawTest("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
 
         pos = glm::vec3(1.5f, 0.9f, -0.5f);
         scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        assimpBackpack.drawTest("models/backpack/backpack.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/backpack/backpack.obj", houseShader, pos, rotationOverTime, scale);
 
 
         pos = glm::vec3(-1.5f, 0.4f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        assimpMcCree.drawTest("models/mcCree/mccreescetchfab.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", houseShader, pos, rotationOverTime, scale);
 
 
         pos = glm::vec3(-1.5f, -1.2f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        assimpCar.drawTest("models/car/car.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/car/car.obj", houseShader, pos, rotationOverTime, scale);
 
 
         pos = glm::vec3(1.5f, -1.4f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        assimpPhoenix.drawTest("models/phoenix_bird/phoenix_bird.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", houseShader, pos, rotationOverTime, scale);
 
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
