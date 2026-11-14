@@ -21,7 +21,6 @@ public:
 
     static Model* Load(const std::string &path);
     void draw(Shader& shader, const glm::vec3& pos, float rot, const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f));
-    void drawTest(const std::string& name, Shader &shader, const glm::vec3& pos, float rot, const glm::vec3& scale);
 
     std::string objModelName;
     static Model* GetModel(const std::string& key);
@@ -37,7 +36,6 @@ private:
     // 'ai' stands for 'Assimp'
     void processNode(aiNode *node, const aiScene *scene);
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
-    std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
 
 

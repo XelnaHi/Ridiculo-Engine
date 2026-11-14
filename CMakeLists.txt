@@ -41,7 +41,9 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         custom_obj_loader/Renderer.cpp
         custom_obj_loader/Renderer.h
         custom_obj_loader/OBJLoader.cpp
-        custom_obj_loader/OBJLoader.h)
+        custom_obj_loader/OBJLoader.h
+        model_loader/TextureLoader.cpp
+        model_loader/TextureLoader.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)

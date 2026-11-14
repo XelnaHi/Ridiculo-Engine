@@ -89,8 +89,17 @@ int main() {
     glfwSwapInterval(1);
 
     stbi_set_flip_vertically_on_load(true);
+
+    std::vector<Shader> shaders;
     Shader houseShader("shaders/2DHouse/vHouse.glsl", "shaders/2DHouse/fHouse.glsl");
+    shaders.push_back(houseShader);
+
     Shader suzanneShader("shaders/Week3/vSuzanne.glsl", "shaders/Week3/fSuzanne.glsl");
+    shaders.push_back(suzanneShader);
+
+    Shader assimpTextureShader("shaders/Week3/TextureShaders/vAssimpTextureShader.glsl",
+                               "shaders/Week3/TextureShaders/fAssimpTextureShader.glsl");
+    shaders.push_back(assimpTextureShader);
 
     glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
@@ -101,12 +110,11 @@ int main() {
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-    Renderer::useCustomLoader = true;
+    Renderer::useCustomLoader = false;
 
     if (Renderer::useCustomLoader) {
         std::cout << "Using custom OBJ loader to load models." << std::endl;
-    }
-    else {
+    } else {
         std::cout << "Using Assimp to load models." << std::endl;
     }
 
@@ -117,16 +125,12 @@ int main() {
     Renderer::LoadObj("models/car/car.obj");
     Renderer::LoadObj("models/phoenix_bird/phoenix_bird.obj");
 
-
-
-    // Only using one shader right now, so cache the view uniform
-    suzanneShader.use();
+    // Cache view for all shaders
     glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f));
-    glUniformMatrix4fv(glGetUniformLocation(suzanneShader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
-
-    houseShader.use();
-    glUniformMatrix4fv(glGetUniformLocation(houseShader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
-
+    for (auto &shader: shaders) {
+        shader.use();
+        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
+    }
 
     auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
     auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -154,10 +158,13 @@ int main() {
                                         100.0f);
             }
 
-            // Set the projection mode. This is unlikely to change dynamically, so we want to refrain from setting this value over and
+            // Set the projection mode for all shaders. This is unlikely to change dynamically, so we want to refrain from setting this value over and
             // over unless necessary, thus we gate it behind the above if statement.
-            glUniformMatrix4fv(glGetUniformLocation(suzanneShader.ID, "u_projection"),
-                               1, GL_FALSE, glm::value_ptr(projection));
+            for (auto &shader: shaders) {
+                shader.use();
+                glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_projection"),
+                                       1, GL_FALSE, glm::value_ptr(projection));
+            }
 
             // Our input has been processed and is no longer considered "dirty" (dirty meaning we have a desired change that has not yet
             // been processed
@@ -190,7 +197,6 @@ int main() {
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
 
-
         const float rotationOverTime = (float) glfwGetTime() * rotation;
 
         pos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -203,7 +209,7 @@ int main() {
 
         pos = glm::vec3(1.5f, 0.9f, -0.5f);
         scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        Renderer::RenderObj("models/backpack/backpack.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/backpack/backpack.obj", assimpTextureShader, pos, rotationOverTime, scale);
 
 
         pos = glm::vec3(-1.5f, 0.4f, -0.5f);
