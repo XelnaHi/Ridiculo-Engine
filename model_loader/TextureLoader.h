@@ -14,6 +14,7 @@
 class TextureLoader {
 public:
     static std::vector<Texture> loadMaterialTextures(const std::string& directory, aiMaterial *mat, aiTextureType type, std::string typeName, std::vector<Texture> &loaded_textures);
+    static void loadMaterialTextures(const std::string& directory, std::string typeName, std::vector<Texture> &loaded_textures);
 };
 
 

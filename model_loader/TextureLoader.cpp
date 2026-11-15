@@ -55,6 +55,10 @@ std::vector<Texture> TextureLoader::loadMaterialTextures(const std::string &dire
     return textures;
 }
 
+void TextureLoader::loadMaterialTextures(const std::string &directory, std::string typeName,
+    std::vector<Texture> &loaded_textures) {
+}
+
 
 /*
  * This helper function that loads a texture file from a folder assumes that the texture file is located relative to where the model is.

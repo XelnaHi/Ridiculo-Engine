@@ -21,9 +21,6 @@
 
 std::unordered_map<std::string, Model *> Model::cachedModels;
 
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
-
-
 Model::Model(const std::string &path) {
     loadModel(path);
 }
@@ -144,8 +141,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     // Process material
     if (mesh->mMaterialIndex >= 0) {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = TextureLoader::loadMaterialTextures(directory, material, aiTextureType_DIFFUSE, "texture_diffuse", textures_loaded);
 
+        std::vector<Texture> diffuseMaps = TextureLoader::loadMaterialTextures(directory, material, aiTextureType_DIFFUSE, "texture_diffuse", textures_loaded);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
         std::vector<Texture> specularMaps = TextureLoader::loadMaterialTextures(directory, material, aiTextureType_SPECULAR, "texture_specular", textures_loaded);

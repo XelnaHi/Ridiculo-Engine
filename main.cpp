@@ -101,6 +101,10 @@ int main() {
                                "shaders/Week3/TextureShaders/fAssimpTextureShader.glsl");
     shaders.push_back(assimpTextureShader);
 
+    Shader combinedShader("shaders/Week3/TextureNormalCombinedShaders/vAssimpCombinedShader.glsl",
+                               "shaders/Week3/TextureNormalCombinedShaders/fAssimpCombinedShader.glsl");
+    shaders.push_back(combinedShader);
+
     glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
 
@@ -130,6 +134,14 @@ int main() {
     for (auto &shader: shaders) {
         shader.use();
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
+
+        // Apply directional light components for all shaders
+        // I was a little confused here, regarding the y-component in the directional light.
+        // Remember to read this vector as directional vector. A positive y-value would mean that the light is
+        // traveling upwards, which is generally not the case when we want to use a directional light which often
+        // mimics how we perceive light coming from *the sun*.
+        glUniform3f(glGetUniformLocation(shader.ID, "lightDirection"), -0.2f, -0.5f, -0.5f);
+        glUniform3f(glGetUniformLocation(shader.ID, "lightColor"), 0.5f, 1.0f, 1.0f);
     }
 
     auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -162,6 +174,7 @@ int main() {
             // over unless necessary, thus we gate it behind the above if statement.
             for (auto &shader: shaders) {
                 shader.use();
+                // Apply projection for all shaders
                 glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_projection"),
                                        1, GL_FALSE, glm::value_ptr(projection));
             }
@@ -201,31 +214,31 @@ int main() {
 
         pos = glm::vec3(0.0f, 0.0f, 0.0f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
 
         pos = glm::vec3(-0.5f, 0.5f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/suzanne/Suzanne.obj", houseShader, pos, rotationOverTime, scale);
-
-        pos = glm::vec3(1.5f, 0.9f, -0.5f);
-        scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        Renderer::RenderObj("models/backpack/backpack.obj", assimpTextureShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
 
 
         pos = glm::vec3(-1.5f, 0.4f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", houseShader, pos, rotationOverTime, scale);
-
-
-        pos = glm::vec3(-1.5f, -1.2f, -0.5f);
-        scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/car/car.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, rotationOverTime, scale);
 
 
         pos = glm::vec3(1.5f, -1.4f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", houseShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, rotationOverTime, scale);
 
+
+        pos = glm::vec3(1.5f, 0.9f, -0.5f);
+        scale = glm::vec3(0.3f, 0.3f, 0.3f);
+        Renderer::RenderObj("models/backpack/backpack.obj", Renderer::useCustomLoader == false ? combinedShader : suzanneShader, pos, rotationOverTime, scale);
+
+
+        pos = glm::vec3(-1.5f, -1.2f, -0.5f);
+        scale = glm::vec3(0.003f, 0.003f, 0.003f);
+        Renderer::RenderObj("models/car/car.obj", Renderer::useCustomLoader == false ? combinedShader : suzanneShader, pos, rotationOverTime, scale);
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
