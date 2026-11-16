@@ -29,6 +29,10 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
                             GLsizei length, const char *message, const void *userParam);
 
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+
+void processInput(GLFWwindow *window);
+
 bool roofColorShouldChange = false;
 
 glm::mat4 projection = glm::mat4(1.0f);
@@ -36,6 +40,23 @@ bool isPerspective = false;
 bool isProjectionDirty = true;
 
 bool shouldUseCustomObjLoader = true;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+
+
+bool firstMouseScreenEnter = true;
+// Initialize yaw to -90 degrees since a yaw of 0.0 results in a direction vector
+// pointing to the right, so we initially rotate
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastMouseX = SCR_WIDTH / 2.0f;
+float lastMouseY = SCR_HEIGHT / 2.0f;
 
 int main() {
     glfwSetErrorCallback(error_callback);
@@ -77,12 +98,18 @@ int main() {
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetKeyCallback(window, key_callback);
 
-    // Research cull face
+
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
+
+    glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
+    // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
+
+    // Hides the cursor and captures it.
+    // Capturing the cursor means that once the application has gained focus,
+    // the mouse stays within the bounds of the window.
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
     glfwSwapInterval(1);
@@ -101,12 +128,12 @@ int main() {
     shaders.push_back(assimpTextureShader);
 
     Shader combinedShader("shaders/Week3/TextureNormalCombinedShaders/vAssimpCombinedShader.glsl",
-                               "shaders/Week3/TextureNormalCombinedShaders/fAssimpCombinedShader.glsl");
+                          "shaders/Week3/TextureNormalCombinedShaders/fAssimpCombinedShader.glsl");
     shaders.push_back(combinedShader);
 
-    glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
-    // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
-
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
@@ -125,11 +152,10 @@ int main() {
     Renderer::LoadObj("models/car/car.obj");
     Renderer::LoadObj("models/phoenix_bird/phoenix_bird.obj");
 
+
     // Cache view for all shaders
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f));
     for (auto &shader: shaders) {
         shader.use();
-        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
 
         // Apply directional light components for all shaders
         // I was a little confused here, regarding the y-component in the directional light.
@@ -153,6 +179,25 @@ int main() {
         // Clears the previous buffer of it's color/depth values. If we dont, we                                                            risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        processInput(window);
+
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // Rotate the camera around the scene over time.
+        // Keep target at (0, 0, 0)
+
+        // Set up the LookAt matrix. The LookAt matrix transforms world space to camera space.
+        glm::mat4 view;
+        // The lookat function requires a position, target and up vector.
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+
+        for (auto &shader: shaders) {
+            shader.use();
+            glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
+        }
 
         // Checks if we have pressed the keybind indicating that we want to switch projection modes
         if (isProjectionDirty) {
@@ -172,7 +217,7 @@ int main() {
                 shader.use();
                 // Apply projection for all shaders
                 glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_projection"),
-                                       1, GL_FALSE, glm::value_ptr(projection));
+                                   1, GL_FALSE, glm::value_ptr(projection));
             }
 
             // Our input has been processed and is no longer considered "dirty" (dirty meaning we have a desired change that has not yet
@@ -210,31 +255,33 @@ int main() {
 
         pos = glm::vec3(0.0f, 0.0f, 0.0f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, 0, scale);
 
         pos = glm::vec3(-0.5f, 0.5f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, 0, scale);
 
 
         pos = glm::vec3(-1.5f, 0.4f, -0.5f);
         scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, 0, scale);
 
 
         pos = glm::vec3(1.5f, -1.4f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, 0, scale);
 
 
         pos = glm::vec3(1.5f, 0.9f, -0.5f);
         scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        Renderer::RenderObj("models/backpack/backpack.obj", Renderer::useCustomLoader == false ? combinedShader : suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/backpack/backpack.obj",
+                            Renderer::useCustomLoader == false ? combinedShader : suzanneShader, pos, 0,
+                            scale);
 
 
         pos = glm::vec3(-1.5f, -1.2f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, 0, scale);
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
@@ -248,6 +295,44 @@ int main() {
     glfwTerminate();
 
     return 0;
+}
+
+/*
+ * Called everytime the mouse moves. Used to register the x and y values of the cursor, which we use to calculate
+ * pitch and yaw of the camera
+ */
+void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
+    if (firstMouseScreenEnter) {
+        lastMouseX = xPos;
+        lastMouseY = yPos;
+        firstMouseScreenEnter = false;
+    }
+
+    float xOffset = static_cast<float>(xPos) - lastMouseX;
+    float yOffset = lastMouseY - static_cast<float>(yPos); // yPos is in screen space, which has
+
+    lastMouseX = xPos;
+    lastMouseY = yPos;
+
+    const float sensitivity = 0.1f;
+    xOffset *= sensitivity;
+    yOffset *= sensitivity;
+
+    yaw += xOffset;
+    pitch += yOffset;
+
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
 }
 
 void error_callback(int error, const char *description) {
@@ -270,6 +355,34 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
         isPerspective = !isPerspective;
         isProjectionDirty = true;
+    }
+}
+
+void processInput(GLFWwindow *window) {
+    const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        cameraPos.y += cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        cameraPos.y -= cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     }
 }
 
