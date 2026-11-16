@@ -133,9 +133,9 @@ void OBJLoader::LoadMesh(const std::string &filepath) {
                         int nIdx = -1;    // -1 means "this vertex has no normal"
 
                         // npos equals the maximum value representable by the type size_type, usually indicating 'end of string' or as an error indication used by functions that return a string index.
-                        if (firstSlash != std::string::npos) {
+                        if (firstSlash != std::string::npos) { // token has at least one '/'
                             // I guess here we make sure that the face token does't look like this "11//1", which would mean that we're missing a uv?
-                            if (secondSlash != firstSlash + 1) {
+                            if (secondSlash != firstSlash + 1) { // UV isn't empty, as in "1//3"
                                 // Example:
                                 // Get (secondSlash - firstSlash - 1) characters, starting from index (firstSlash + 1)
                                 // --> idx = (secondSlash + 1) = (2 + 1) = 3
@@ -150,7 +150,7 @@ void OBJLoader::LoadMesh(const std::string &filepath) {
                                 uvIdx = std::stoi(s.substr(firstSlash + 1, uvLen)) - 1;
                             }
                             // Similarly to the above if check, I guess here we are checking that we are not missing a normal?
-                            if (secondSlash != std::string::npos) {
+                            if (secondSlash != std::string::npos) { // token has a normal
                                 nIdx = std::stoi(s.substr(secondSlash + 1)) - 1;
                             }
                         }
@@ -158,6 +158,8 @@ void OBJLoader::LoadMesh(const std::string &filepath) {
                         CustomVertex vertex;
 
                         vertex.position = temp_positions[pIdx];
+
+                        // Check that we're within the bounds of [0, list.size -1]
                         vertex.normal = (nIdx >= 0 && nIdx < (int)temp_normals.size()) ? temp_normals[nIdx] : glm::vec3(0.0f, 1.0f, 0.0f);
                         vertex.uv     = (uvIdx >= 0 && uvIdx < (int)temp_uvs.size())   ? temp_uvs[uvIdx]   : glm::vec2(0.0f);
 

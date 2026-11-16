@@ -42,7 +42,8 @@ void main() {
 
     // This calculation will give us the object's reflected value.
     vec3 diffuse = diff * lightColor;
+    vec3 ambient = 0.15f * lightColor;
 
-    FragColor = vec4(diffuse, 1.0);
+    FragColor = vec4(ambient + diffuse, 1.0);
 
 }

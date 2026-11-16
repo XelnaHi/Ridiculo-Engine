@@ -1,5 +1,4 @@
 #define GLFW_INCLUDE_NONE // Disallow older versions of the OpenGL header to be included
-#include <cmath>
 #include <complex>
 #include <filesystem>
 #include <iostream>
@@ -14,10 +13,7 @@
 
 #include "Shader.h"
 #include "assimp/version.h"
-#include "custom_obj_loader/CustomMesh.h"
-#include "custom_obj_loader/OBJLoader.h"
 #include "custom_obj_loader/Renderer.h"
-#include "model_loader/Model.h"
 #include "stb/stb_image.h"
 
 
@@ -84,6 +80,9 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
 
+    // Research cull face
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
 
     // Rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
     glfwSwapInterval(1);
@@ -108,9 +107,6 @@ int main() {
     glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
 
-    // Research cull face
-    glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
@@ -238,7 +234,7 @@ int main() {
 
         pos = glm::vec3(-1.5f, -1.2f, -0.5f);
         scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        Renderer::RenderObj("models/car/car.obj", Renderer::useCustomLoader == false ? combinedShader : suzanneShader, pos, rotationOverTime, scale);
+        Renderer::RenderObj("models/car/car.obj", suzanneShader, pos, rotationOverTime, scale);
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
