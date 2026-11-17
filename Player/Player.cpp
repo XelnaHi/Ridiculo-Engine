@@ -4,6 +4,14 @@
 
 #include "Player.h"
 
-Player::Player(Controller *controller) :
-    controller(controller){
+#include <iostream>
+
+#include "../Camera/Camera.h"
+#include "../PlayerInput/PlayerInput.h"
+
+Player::Player(Camera *camera) : camera(camera) {
+}
+
+void Player::update(const PlayerInput &input) {
+    camera->Move(input.moveZ);
 }

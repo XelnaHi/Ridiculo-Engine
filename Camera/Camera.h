@@ -54,6 +54,8 @@ public:
 
   [[nodiscard]] glm::mat4 GetViewMatrix() const;
 
+    void Move(float z);
+
     /*
      * Probably want to refactor keyboard and mouse processing to a Controller class, and route input based
      * on a Controller ID.

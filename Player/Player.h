@@ -6,13 +6,16 @@
 #define RIDICULOENGINE_PLAYER_H
 
 
+struct PlayerInput;
+class Camera;
 class Controller;
 
 class Player {
 public:
-    Player(Controller *controller);
+    Player(Camera *camera);
+    void update(const PlayerInput& input);
 
-    Controller* controller;
+    Camera* camera;
 };
 
 

@@ -49,7 +49,8 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         Controller/Controller.cpp
         Controller/Controller.h
         Player/Player.cpp
-        Player/Player.h)
+        Player/Player.h
+        PlayerInput/PlayerInput.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)

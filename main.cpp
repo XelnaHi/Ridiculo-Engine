@@ -1,4 +1,5 @@
 #define GLFW_INCLUDE_NONE // Disallow older versions of the OpenGL header to be included
+#include <array>
 #include <complex>
 #include <filesystem>
 #include <iostream>
@@ -16,11 +17,12 @@
 #include "Camera/Camera.h"
 #include "Controller/Controller.h"
 #include "custom_obj_loader/Renderer.h"
+#include "Player/Player.h"
 #include "stb/stb_image.h"
 
 
-static constexpr int SCR_WIDTH = 800;
-static constexpr int SCR_HEIGHT = 600;
+static constexpr int SCR_WIDTH = 1920;
+static constexpr int SCR_HEIGHT = 1080;
 
 void error_callback(int error, const char *description);
 
@@ -33,7 +35,6 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
-void processInput(GLFWwindow *window);
 
 bool roofColorShouldChange = false;
 
@@ -104,8 +105,6 @@ int main() {
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
 
 
-    Controller controller1(&camera, window);
-
     // Rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
     glfwSwapInterval(1);
 
@@ -165,8 +164,26 @@ int main() {
     auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
     constexpr float rotation = 50.0f;
 
+    std::array<PlayerInput, 1> inputs = {};
+    Controller controller1(window);
+    std::vector<Controller> controllers = {controller1};
+
+
     while (!glfwWindowShouldClose(window)) {
-        // input is registered as a callback as part of the programs init phase
+        glm::mat4 view;
+        // Clear the input struct for all players every frame.
+        std::array<PlayerInput, 1> playerInputs = {};
+        for (int i = 0; i < playerInputs.size(); i++) {
+            inputs[i] = controllers[i].PollInput();
+            controllers[i].player->update(inputs[i]);
+            view = controllers[0].player->camera->GetViewMatrix();
+        }
+
+
+        auto currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
 
         // Set the color to use when clearing the frame buffers.
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -174,17 +191,11 @@ int main() {
         // Clears the previous buffer of its color/depth values. If we don't, we                                                            risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        processInput(window);
-
-        auto currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
 
         // Rotate the camera around the scene over time.
         // Keep target at (0, 0, 0)
 
         // Set up the LookAt matrix. The LookAt matrix transforms world space to camera space.
-        glm::mat4 view = camera.GetViewMatrix();
 
         for (auto &shader: shaders) {
             shader.use();
@@ -395,26 +406,4 @@ void APIENTRY glDebugOutput(GLenum source,
     }
     std::cout << std::endl;
     std::cout << std::endl;
-}
-
-void processInput(GLFWwindow *window) {
-    const float cameraSpeed = 2.5f * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        camera.ProcessKeyboard(UP, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        camera.ProcessKeyboard(DOWN, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.ProcessKeyboard(RIGHT, deltaTime);
-    }
 }
