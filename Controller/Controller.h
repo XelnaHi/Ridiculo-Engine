@@ -8,6 +8,14 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+struct Bindings {
+    int Forward_W = -1;
+    int Backward_S = -1;
+
+    int rotatePitchRight = -1;
+    int rotatePitchLeft = -1;
+};
+
 class Player;
 class Camera;
 /*
@@ -15,7 +23,7 @@ class Camera;
  */
 class Controller {
 public:
-   explicit Controller(GLFWwindow *window);
+   explicit Controller(GLFWwindow *window, Bindings bindings);
 
     PlayerInput PollInput();
 
@@ -24,9 +32,11 @@ public:
 
 private:
     GLFWwindow *window;
+    Bindings bindings;
 
     float getAxis(int positive, int negative);
-    bool getKeyDown();
+    float getRotation(int positive, int negative);
+    bool getKeyDown(int key);
     void createPlayer();
 
 };

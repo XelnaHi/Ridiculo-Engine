@@ -36,13 +36,10 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
 
-bool roofColorShouldChange = false;
 
 glm::mat4 projection = glm::mat4(1.0f);
 bool isPerspective = false;
 bool isProjectionDirty = true;
-
-bool shouldUseCustomObjLoader = true;
 
 
 // Most notably used for making frame originally rate-dependant calculations, such as velocity calculations,
@@ -165,8 +162,12 @@ int main() {
     constexpr float rotation = 50.0f;
 
     std::array<PlayerInput, 1> inputs = {};
-    Controller controller1(window);
-    std::vector<Controller> controllers = {controller1};
+
+    Bindings bindings_p1 = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_A};
+    Controller controller1(window, bindings_p1);
+
+    std::vector<Controller> controllers;
+    controllers.emplace_back(controller1);
 
 
     while (!glfwWindowShouldClose(window)) {
@@ -331,10 +332,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
-
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-        roofColorShouldChange = !roofColorShouldChange;
     }
 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {

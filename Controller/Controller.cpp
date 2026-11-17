@@ -9,7 +9,7 @@
 #include "../Camera/Camera.h"
 #include "../Player/Player.h"
 
-Controller::Controller(GLFWwindow *window) : window(window) {
+Controller::Controller(GLFWwindow *window, Bindings inBindings) : window(window), bindings(inBindings) {
     // Hides the cursor and captures it.
     // Capturing the cursor means that once the application has gained focus,
     // the mouse stays within the bounds of the window.
@@ -29,7 +29,9 @@ Controller::Controller(GLFWwindow *window) : window(window) {
 PlayerInput Controller::PollInput() {
     PlayerInput input;
 
-    input.moveZ = getAxis(0,0);
+    input.moveZ = getAxis(bindings.Forward_W, bindings.Backward_S);
+
+    input.rotateYaw = getRotation(bindings.rotatePitchRight, bindings.rotatePitchLeft);
 
     return input;
 }
@@ -41,13 +43,13 @@ void Controller::createPlayer() {
 }
 
 float Controller::getAxis(int positive, int negative) {
-    return getKeyDown() ? 1.0 : 0.0;
+    return (getKeyDown(positive) ? 1.0f : 0.0f) - (getKeyDown(negative) ? 1.0f : 0.0f);
 }
 
-bool Controller::getKeyDown() {
-    int state = glfwGetKey(window, GLFW_KEY_W);
-    if (state == GLFW_PRESS) {
-        return true;
-    }
-    return false;
+float Controller::getRotation(int positive, int negative) {
+    return (getKeyDown(positive) ? 1.0f : 0.0f) - (getKeyDown(negative) ? 1.0f : 0.0f);
+}
+
+bool Controller::getKeyDown(int key) {
+    return key != -1 && glfwGetKey(window, key) == GLFW_PRESS;
 }
