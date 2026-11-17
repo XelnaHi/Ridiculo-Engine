@@ -45,7 +45,12 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         model_loader/TextureLoader.cpp
         model_loader/TextureLoader.h
         Camera/Camera.cpp
-        Camera/Camera.h)
+        Camera/Camera.h
+        Controller/Controller.cpp
+        Controller/Controller.h
+        Player/Player.cpp
+        Player/Player.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)
+

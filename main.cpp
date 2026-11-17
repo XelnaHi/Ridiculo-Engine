@@ -14,6 +14,7 @@
 #include "Shader.h"
 #include "assimp/version.h"
 #include "Camera/Camera.h"
+#include "Controller/Controller.h"
 #include "custom_obj_loader/Renderer.h"
 #include "stb/stb_image.h"
 
@@ -102,10 +103,8 @@ int main() {
     glEnable(GL_DEPTH_TEST); // Allows fragments z-values to be compared to the depth buffer, helping us decide whether
     // a fragment should be rendered or discarded. This state (enabled/disabled) is stored until otherwise specified.
 
-    // Hides the cursor and captures it.
-    // Capturing the cursor means that once the application has gained focus,
-    // the mouse stays within the bounds of the window.
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    Controller controller1(&camera, window);
 
     // Rate limits the time between front- and back buffer swaps, and reduces screen tearing. Also known as VSync.
     glfwSwapInterval(1);

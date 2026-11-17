@@ -16,31 +16,35 @@ enum Camera_Movement {
     DOWN
 };
 
-// Default camera values
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-const float SPEED = 2.5f;
-const float SENSITIVITY = 0.1f;
-const float ZOOM = 45.0f;
+
 
 
 // Class that processes input and calculates the corresponding Euler Angles,
 // vectors and matrices.
 class Camera {
 public:
+    // Default camera values
+    static constexpr float YAW = -90.0f;
+    static constexpr float PITCH = 0.0f;
+    static constexpr float SPEED = 2.5f;
+    static constexpr float SENSITIVITY = 0.1f;
+    static constexpr float ZOOM = 45.0f;
+
+    // Per Camera instance camera values
+    float Yaw;
+    float Pitch;
+    float MovementSpeed;
+    float MouseSensitivity;
+    float Zoom;
+
     // camera Attributes
     glm::vec3 Position;
     glm::vec3 Front;
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
-    // euler Angles
-    float Yaw;
-    float Pitch;
-    // camera options
-    float MovementSpeed;
-    float MouseSensitivity;
-    float Zoom;
+
+
 
     // Construct camera class object using vectors. Learnopengl also implements a constructor
     // taking scalar values, but I don't see the point of it yet, so I'm not implementing it.
