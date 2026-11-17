@@ -13,6 +13,7 @@
 
 #include "Shader.h"
 #include "assimp/version.h"
+#include "Camera/Camera.h"
 #include "custom_obj_loader/Renderer.h"
 #include "stb/stb_image.h"
 
@@ -29,7 +30,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
                             GLsizei length, const char *message, const void *userParam);
 
-void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
 void processInput(GLFWwindow *window);
 
@@ -41,20 +42,16 @@ bool isProjectionDirty = true;
 
 bool shouldUseCustomObjLoader = true;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+// Most notably used for making frame originally rate-dependant calculations, such as velocity calculations,
+// non-frame rate dependant. In the example of velocity, this means that a machine with higher FPS
+// won't gain a velocity advantage compared to a machine with lower FPS.
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 
-
 bool firstMouseScreenEnter = true;
-// Initialize yaw to -90 degrees since a yaw of 0.0 results in a direction vector
-// pointing to the right, so we initially rotate
-float yaw = -90.0f;
-float pitch = 0.0f;
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastMouseX = SCR_WIDTH / 2.0f;
 float lastMouseY = SCR_HEIGHT / 2.0f;
 
@@ -97,7 +94,6 @@ int main() {
         glDebugMessageCallback(glDebugOutput, nullptr);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
-
 
 
     glCullFace(GL_BACK);
@@ -176,12 +172,12 @@ int main() {
         // Set the color to use when clearing the frame buffers.
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        // Clears the previous buffer of it's color/depth values. If we dont, we                                                            risk using old buffers values.
+        // Clears the previous buffer of its color/depth values. If we don't, we                                                            risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         processInput(window);
 
-        float currentFrame = glfwGetTime();
+        auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
@@ -189,10 +185,7 @@ int main() {
         // Keep target at (0, 0, 0)
 
         // Set up the LookAt matrix. The LookAt matrix transforms world space to camera space.
-        glm::mat4 view;
-        // The lookat function requires a position, target and up vector.
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
+        glm::mat4 view = camera.GetViewMatrix();
 
         for (auto &shader: shaders) {
             shader.use();
@@ -204,7 +197,7 @@ int main() {
             if (!isPerspective) {
                 projection = glm::perspective(glm::radians(45.0f), (float) SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
             } else {
-                float aspect = (float) SCR_WIDTH / (float) SCR_HEIGHT;
+                float aspect = static_cast<float>(SCR_WIDTH) / static_cast<float>(SCR_HEIGHT);
                 float orthoHeight = 2.0f;
                 float orthoWidth = orthoHeight * aspect;
                 projection = glm::ortho(-orthoWidth / 2, orthoWidth / 2, -orthoHeight / 2, orthoHeight / 2, 0.1f,
@@ -301,7 +294,7 @@ int main() {
  * Called everytime the mouse moves. Used to register the x and y values of the cursor, which we use to calculate
  * pitch and yaw of the camera
  */
-void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
+void mouse_callback(GLFWwindow *window, double xPos, double yPos) {
     if (firstMouseScreenEnter) {
         lastMouseX = xPos;
         lastMouseY = yPos;
@@ -314,25 +307,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
     lastMouseX = xPos;
     lastMouseY = yPos;
 
-    const float sensitivity = 0.1f;
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
-
-    yaw += xOffset;
-    pitch += yOffset;
-
-    if (pitch > 89.0f) {
-        pitch = 89.0f;
-    }
-    if (pitch < -89.0f) {
-        pitch = -89.0f;
-    }
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
+    camera.ProcessMouseMovement(xOffset, yOffset);
 }
 
 void error_callback(int error, const char *description) {
@@ -355,34 +330,6 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
         isPerspective = !isPerspective;
         isProjectionDirty = true;
-    }
-}
-
-void processInput(GLFWwindow *window) {
-    const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        cameraPos += cameraSpeed * cameraFront;
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        cameraPos -= cameraSpeed * cameraFront;
-    }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    {
-        cameraPos.y += cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-        cameraPos.y -= cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     }
 }
 
@@ -449,4 +396,26 @@ void APIENTRY glDebugOutput(GLenum source,
     }
     std::cout << std::endl;
     std::cout << std::endl;
+}
+
+void processInput(GLFWwindow *window) {
+    const float cameraSpeed = 2.5f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        camera.ProcessKeyboard(UP, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        camera.ProcessKeyboard(DOWN, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+    }
 }
