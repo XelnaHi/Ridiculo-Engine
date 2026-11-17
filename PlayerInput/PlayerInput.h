@@ -12,6 +12,7 @@ struct PlayerInput {
     float moveZ = 0.0f;
 
     float rotateYaw = 0.0f;
+    float rotatePitch = 0.0f;
 };
 
 #endif //RIDICULOENGINE_PLAYERINPUT_H

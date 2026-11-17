@@ -31,7 +31,8 @@ PlayerInput Controller::PollInput() {
 
     input.moveZ = getAxis(bindings.Forward_W, bindings.Backward_S);
 
-    input.rotateYaw = getRotation(bindings.rotatePitchRight, bindings.rotatePitchLeft);
+    input.rotateYaw = getRotation(bindings.rotateYawRight, bindings.rotateYawLeft);
+    input.rotatePitch = getRotation(bindings.rotatePitchUp, bindings.rotatePitchDown);
 
     return input;
 }

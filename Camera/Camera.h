@@ -56,7 +56,7 @@ public:
 
     void Move(float z);
 
-    void Rotate(float yaw);
+    void Rotate(float yaw, float pitch);
     /*
      * Probably want to refactor keyboard and mouse processing to a Controller class, and route input based
      * on a Controller ID.

@@ -163,7 +163,7 @@ int main() {
 
     std::array<PlayerInput, 1> inputs = {};
 
-    Bindings bindings_p1 = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_A};
+    Bindings bindings_p1 = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_A, GLFW_KEY_Q, GLFW_KEY_E};
     Controller controller1(window, bindings_p1);
 
     std::vector<Controller> controllers;

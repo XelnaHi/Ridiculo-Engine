@@ -26,9 +26,10 @@ void Camera::Move(const float z) {
     Position += Front * z * (2.5f * 0.016f);
 }
 
-void Camera::Rotate(float yaw) {
+void Camera::Rotate(float yaw, float pitch) {
 
     Yaw += yaw;
+    Pitch += pitch;
     updateCameraVectors();
 }
 
