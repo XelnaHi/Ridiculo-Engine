@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "../Camera/Camera.h"
-#include "../PlayerInput/PlayerInput.h"
+#include "../Controller/PlayerInput.h"
 
 Player::Player(Camera *camera) : camera(camera) {
 }

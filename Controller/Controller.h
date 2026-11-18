@@ -4,7 +4,7 @@
 
 #ifndef RIDICULOENGINE_CONTROLLER_H
 #define RIDICULOENGINE_CONTROLLER_H
-#include "../PlayerInput/PlayerInput.h"
+#include "PlayerInput.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -41,6 +41,7 @@ private:
     float getRotation(int positive, int negative);
     bool getKeyDown(int key);
     void createPlayer();
+    bool areUtilBindsSet = false;
 
 };
 

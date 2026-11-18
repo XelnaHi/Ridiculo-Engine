@@ -8,8 +8,17 @@
 
 #include "../Camera/Camera.h"
 #include "../Player/Player.h"
+#include "../Renderer/Renderer.h"
+
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+
 
 Controller::Controller(GLFWwindow *window, Bindings inBindings) : window(window), bindings(inBindings) {
+    if (!areUtilBindsSet) {
+        glfwSetKeyCallback(window, key_callback);
+        areUtilBindsSet = true;
+    }
+
     // Hides the cursor and captures it.
     // Capturing the cursor means that once the application has gained focus,
     // the mouse stays within the bounds of the window.
@@ -53,4 +62,15 @@ float Controller::getRotation(int positive, int negative) {
 
 bool Controller::getKeyDown(int key) {
     return key != -1 && glfwGetKey(window, key) == GLFW_PRESS;
+}
+
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+        Renderer::isPerspective = !Renderer::isPerspective;
+        Renderer::isProjectionDirty = true;
+    }
 }
