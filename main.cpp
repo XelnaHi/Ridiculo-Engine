@@ -16,7 +16,7 @@
 #include "assimp/version.h"
 #include "Camera/Camera.h"
 #include "Controller/Controller.h"
-#include "custom_obj_loader/Renderer.h"
+#include "Renderer/Renderer.h"
 #include "Player/Player.h"
 #include "stb/stb_image.h"
 

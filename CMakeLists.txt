@@ -38,8 +38,8 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         model_loader/Model.h
         custom_obj_loader/CustomMesh.cpp
         custom_obj_loader/CustomMesh.h
-        custom_obj_loader/Renderer.cpp
-        custom_obj_loader/Renderer.h
+        Renderer/Renderer.cpp
+        Renderer/Renderer.h
         custom_obj_loader/OBJLoader.cpp
         custom_obj_loader/OBJLoader.h
         model_loader/TextureLoader.cpp

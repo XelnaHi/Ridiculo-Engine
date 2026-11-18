@@ -8,8 +8,8 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "CustomMesh.h"
-#include "OBJLoader.h"
+#include "../custom_obj_loader/CustomMesh.h"
+#include "../custom_obj_loader/OBJLoader.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "../Shader.h"
 #include "../model_loader/Model.h"
