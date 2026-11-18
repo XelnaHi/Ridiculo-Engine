@@ -87,7 +87,8 @@ void Camera::updateCameraVectors() {
     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     Front = glm::normalize(front);
 
-    // also re-calculate the Right and Up vector
+    // The Right vector value grows and shrinks depending on our cameras orientation, which is why we need to
+    // normalize it.
     Right = glm::normalize(glm::cross(Front, WorldUp));
 
     // normalize the vectors, because their length gets closer to 0 the more you look up or down
