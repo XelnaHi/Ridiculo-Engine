@@ -175,13 +175,13 @@ void Renderer::Render() {
             float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
 
             scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            RenderObj(LevelManager::activeLevel->playerModel1, suzanneShader, pos, yawDeg, scale);
+            RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
         } else {
             pos = GameState::controllers[0].player->camera->Position;
             Camera *cam = GameState::controllers[0].player->camera;
             float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
             scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            RenderObj(LevelManager::activeLevel->playerModel2, suzanneShader, pos, yawDeg, scale);
+            RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
         }
 
         Shader &combinedShader = shaderMap.at("CombinedShader");

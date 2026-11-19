@@ -12,7 +12,7 @@
 Player::Player(Camera *camera) : camera(camera) {
 }
 
-void Player::update(const PlayerInput &input) {
+void Player::update(const PlayerInput &input) const {
     camera->Move(input.moveZ);
 
     camera->Rotate(input.rotateYaw, input.rotatePitch);

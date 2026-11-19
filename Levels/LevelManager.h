@@ -17,16 +17,16 @@ struct Scene {
     std::string levelFilepath;
 };
 
+struct PlayerInfo {
+    glm::vec3 startPosition;
+    std::string playerModel;
+};
+
 struct Level {
     unsigned int ID;
     std::string levelName;
     std::vector<GameObject> gameObjects;
-
-    glm::vec3 playerPosition1;
-    std::string playerModel1;
-
-    glm::vec3 playerPosition2;
-    std::string playerModel2;
+    std::vector<PlayerInfo> playerInfoList;
 };
 
 struct GameObject {

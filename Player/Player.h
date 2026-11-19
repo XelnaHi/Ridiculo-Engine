@@ -13,8 +13,8 @@ class Controller;
 
 class Player {
 public:
-    Player(Camera *camera);
-    void update(const PlayerInput& input);
+    explicit Player(Camera *camera);
+    void update(const PlayerInput& input) const;
     Camera* camera;
 };
 

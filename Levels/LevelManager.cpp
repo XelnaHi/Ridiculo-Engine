@@ -32,16 +32,18 @@ void LevelManager::InitLevel(unsigned int id) {
         Renderer::LoadObj(level->gameObjects[i].modelPath);
     }
 
-    Renderer::LoadObj(level->playerModel1);
-    Renderer::LoadObj(level->playerModel2);
+    for (int i = 0; i < level->playerInfoList.size(); ++i) {
+        Renderer::LoadObj(level->playerInfoList[i].playerModel);
+    }
 
     Shader playerShader = Renderer::shaderMap.at("SuzanneShader");
 
-    Renderer::RenderObj(level->playerModel1, playerShader, level->playerPosition1, 0);
-    GameState::controllers[0].player->camera->Position = level->playerPosition1;
+    for (int i = 0; i < level->playerInfoList.size(); ++i) {
+        Renderer::RenderObj(level->playerInfoList[i].playerModel, playerShader, level->playerInfoList[i].startPosition,
+                            0);
 
-    Renderer::RenderObj(level->playerModel2, playerShader, level->playerPosition2, 0);
-    GameState::controllers[1].player->camera->Position = level->playerPosition2;
+        GameState::controllers[i].player->camera->Position = level->playerInfoList[i].startPosition;
+    }
 
 
     activeLevel = level;
