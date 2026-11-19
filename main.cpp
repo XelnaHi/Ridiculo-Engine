@@ -17,8 +17,10 @@
 #include "Camera/Camera.h"
 #include "Controller/Controller.h"
 #include "GameState/GameState.h"
+#include "Levels/LevelManager.h"
 #include "Renderer/Renderer.h"
 #include "Player/Player.h"
+#include "SceneParser/SceneParser.h"
 #include "stb/stb_image.h"
 
 
@@ -128,6 +130,12 @@ int main() {
     };
     GameState::CreateController(window, bindings_p1);
     GameState::CreateController(window, bindings_p2);
+
+    SceneParser::ParseSceneFile("Levels/sceneFormat");
+    for (int i = 0; i < LevelManager::scenes.size(); ++i) {
+        std::cout << LevelManager::scenes[i].sceneName << " " << LevelManager::scenes[i].levelFilepath << std::endl;
+    }
+    SceneParser::ParseLevel(LevelManager::scenes[0].levelFilepath);
 
     while (!glfwWindowShouldClose(window)) {
         auto currentFrame = static_cast<float>(glfwGetTime());

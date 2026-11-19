@@ -20,6 +20,7 @@
 #include "../Controller/Controller.h"
 #include "../Player/Player.h"
 #include "../Camera/Camera.h"
+#include "../Levels/LevelManager.h"
 
 
 int Renderer::drawCalls = 0;
@@ -221,6 +222,11 @@ void Renderer::Render() {
             scale = glm::vec3(0.5f, 0.5f, 0.5f);
             RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, yawDeg, scale);
         }
+
+
+        std::cout << LevelManager::levels[0].gameObjects[0].modelName << std::endl;
+        pos = LevelManager::levels[0].gameObjects[0].position;
+        RenderObj(LevelManager::levels[0].gameObjects[0].modelName, suzanneShader, pos, 0, scale);
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
