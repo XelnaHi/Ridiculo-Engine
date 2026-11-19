@@ -4,6 +4,7 @@
 
 #ifndef RIDICULOENGINE_PLAYER_H
 #define RIDICULOENGINE_PLAYER_H
+#include <string>
 
 
 struct PlayerInput;
@@ -14,7 +15,6 @@ class Player {
 public:
     Player(Camera *camera);
     void update(const PlayerInput& input);
-
     Camera* camera;
 };
 

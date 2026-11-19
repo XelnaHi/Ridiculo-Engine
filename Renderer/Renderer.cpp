@@ -43,6 +43,7 @@ void Renderer::RenderObj(const std::string &name, Shader &shader, const glm::vec
         Model *model = Model::GetModel(name);
         if (!model) {
             std::cout << "[ERROR] Model not found: " << name << std::endl;
+            return;
         }
         model->draw(shader, pos, rot, scale);
         return;
@@ -94,13 +95,6 @@ void Renderer::InitShaders() {
         glUniform3f(glGetUniformLocation(shader.ID, "lightColor"), 0.5f, 1.0f, 1.0f);
     }
 
-
-    LoadObj("models/suzanne/Suzanne.obj");
-    LoadObj("models/suzanne/Suzanne.obj");
-    LoadObj("models/backpack/backpack.obj");
-    LoadObj("models/mcCree/mccreescetchfab.obj");
-    LoadObj("models/car/car.obj");
-    LoadObj("models/phoenix_bird/phoenix_bird.obj");
 }
 
 void Renderer::Render() {
@@ -174,59 +168,29 @@ void Renderer::Render() {
 
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
-
         Shader &suzanneShader = shaderMap.at("SuzanneShader");
-        pos = glm::vec3(0.0f, 0.0f, 0.0f);
-        scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, 0, scale);
-
-        pos = glm::vec3(-0.5f, 0.5f, -0.5f);
-        scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, 0, scale);
-
-
-        pos = glm::vec3(-1.5f, 0.4f, -0.5f);
-        scale = glm::vec3(0.5f, 0.5f, 0.5f);
-        RenderObj("models/mcCree/mccreescetchfab.obj", suzanneShader, pos, 0, scale);
-
-
-        pos = glm::vec3(1.5f, -1.4f, -0.5f);
-        scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        RenderObj("models/phoenix_bird/phoenix_bird.obj", suzanneShader, pos, 0, scale);
-
-
-        Shader &combinedShader = shaderMap.at("CombinedShader");
-        pos = glm::vec3(1.5f, 0.9f, -0.5f);
-        scale = glm::vec3(0.3f, 0.3f, 0.3f);
-        RenderObj("models/backpack/backpack.obj",
-                  Renderer::useCustomLoader == false ? combinedShader : suzanneShader, pos, 0,
-                  scale);
-
-
-        pos = glm::vec3(-1.5f, -1.2f, -0.5f);
-        scale = glm::vec3(0.003f, 0.003f, 0.003f);
-        RenderObj("models/car/car.obj", suzanneShader, pos, 0, scale);
-
-
         if (i == 0) {
             pos = GameState::controllers[1].player->camera->Position;
             Camera *cam = GameState::controllers[1].player->camera;
             float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
 
             scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, yawDeg, scale);
+            RenderObj(LevelManager::activeLevel->playerModel1, suzanneShader, pos, yawDeg, scale);
         } else {
             pos = GameState::controllers[0].player->camera->Position;
             Camera *cam = GameState::controllers[0].player->camera;
             float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
             scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            RenderObj("models/suzanne/Suzanne.obj", suzanneShader, pos, yawDeg, scale);
+            RenderObj(LevelManager::activeLevel->playerModel2, suzanneShader, pos, yawDeg, scale);
         }
 
+        Shader &combinedShader = shaderMap.at("CombinedShader");
+        for (int i = 0; i < LevelManager::activeLevel->gameObjects.size(); ++i) {
+            pos = LevelManager::activeLevel->gameObjects[i].position;
+            scale = LevelManager::activeLevel->gameObjects[i].scale;
+            RenderObj(LevelManager::activeLevel->gameObjects[i].modelPath, suzanneShader, pos, 0, scale);
+        }
 
-        std::cout << LevelManager::levels[0].gameObjects[0].modelName << std::endl;
-        pos = LevelManager::levels[0].gameObjects[0].position;
-        RenderObj(LevelManager::levels[0].gameObjects[0].modelName, suzanneShader, pos, 0, scale);
 
         // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
         // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.

@@ -123,7 +123,6 @@ int main() {
 
     Renderer::InitShaders();
 
-
     Bindings bindings_p1 = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_A, GLFW_KEY_Q, GLFW_KEY_E};
     Bindings bindings_p2 = {
         GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_RIGHT, GLFW_KEY_LEFT, GLFW_KEY_PAGE_DOWN, GLFW_KEY_PAGE_UP
@@ -132,10 +131,10 @@ int main() {
     GameState::CreateController(window, bindings_p2);
 
     SceneParser::ParseSceneFile("Levels/sceneFormat");
-    for (int i = 0; i < LevelManager::scenes.size(); ++i) {
-        std::cout << LevelManager::scenes[i].sceneName << " " << LevelManager::scenes[i].levelFilepath << std::endl;
-    }
-    SceneParser::ParseLevel(LevelManager::scenes[0].levelFilepath);
+    LevelManager::InitLevel(0);
+
+
+
 
     while (!glfwWindowShouldClose(window)) {
         auto currentFrame = static_cast<float>(glfwGetTime());

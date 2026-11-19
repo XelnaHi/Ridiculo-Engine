@@ -13,7 +13,7 @@ class Shader
 public:
     unsigned int ID;
 
-    // Read an build shader
+    // Read and build shader
     Shader(const char* vertexPath, const char* fragmentPath);
 
     // Use/activate the shader

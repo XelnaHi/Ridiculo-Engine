@@ -6,10 +6,12 @@
 #define RIDICULOENGINE_SCENEPARSER_H
 #include <string>
 
+struct Level;
+
 class SceneParser {
 public:
     static void ParseSceneFile(const std::string& filePath);
-    static void ParseLevel(const std::string& levelFilepath);
+    static Level* ParseLevel(unsigned int id, const std::string& levelFilepath);
 };
 
 

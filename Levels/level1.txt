@@ -1,14 +1,18 @@
-/* Model Directory assumes you are operating off of the relative directory name 'models' as a prefix.
-* Ie, the model name 'backpack' assumes that the file parser uses 'models/' as a prefix when searching for the resulting
-* filepath (example result: models/backpack)
-*
-* #M = Model data
-* #P_Start = player start positions
-*
-*
 
-// Model Directory                              Position
-#M models/backpack/backpack.obj                 0 3 -2
+// Level ID
+#ID     1
 
-// Player Start                                 Position 1      Position 2
-#P_Start                                        -2 0 0          2 0 0
+// Model Path                                   Position        Scale
+#M models/backpack/backpack.obj                 -2 3 -2         1.0 1.0 1.0
+#M models/car/car.obj                            2 3 -2         0.003 0.003 0.003
+#M models/phoenix_bird/phoenix_bird.obj         -4 0 -2         0.003 0.003 0.003
+#M models/backpack/backpack.obj                  2 0 -2         1.0 1.0 1.0
+#M models/backpack/backpack.obj                 -2 -1 -2        1.0 1.0 1.0
+
+// Player1      Model                           Start Position
+#P1_Model       models/suzanne/Suzanne.obj
+#P1_Start                                       -3 0 10
+
+// Player2      Model                           Start Position
+#P2_Model       models/mcCree/mccreescetchfab.obj
+#P2_Start                                        3 0 10

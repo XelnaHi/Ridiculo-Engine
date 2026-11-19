@@ -30,6 +30,7 @@ public:
     static void RenderObj(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot,
                           const glm::vec3 &scale = glm::vec3(1.0f, 1.0f, 1.0f));
 
+
     static void InitShaders();
 
     static std::map<std::string, Shader> shaderMap;
