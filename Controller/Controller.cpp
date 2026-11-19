@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "../Camera/Camera.h"
+#include "../Levels/LevelManager.h"
 #include "../Player/Player.h"
 #include "../Renderer/Renderer.h"
 
@@ -69,8 +70,21 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
+    // TODO: refactor how perspective/orthographic is handled
+    // if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+    //     Renderer::isPerspective = !Renderer::isPerspective;
+    //     Renderer::isProjectionDirty = true;
+    // }
+
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-        Renderer::isPerspective = !Renderer::isPerspective;
-        Renderer::isProjectionDirty = true;
+        LevelManager::InitLevel(0);
+    }
+
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+        LevelManager::InitLevel(1);
+    }
+
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
+        LevelManager::InitLevel(2);
     }
 }

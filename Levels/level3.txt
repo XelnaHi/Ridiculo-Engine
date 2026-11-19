@@ -1,0 +1,13 @@
+// Level ID
+#ID     2
+
+// Model Path                                   Position        Scale
+#M models/phoenix_bird/phoenix_bird.obj         0 1 -3         0.008 0.008 0.008
+#M models/phoenix_bird/phoenix_bird.obj         5 -2 -6        0.008 0.008 0.008
+#M models/phoenix_bird/phoenix_bird.obj         -6 2 -4        0.008 0.008 0.008
+#M models/phoenix_bird/phoenix_bird.obj         -1 -3 -5       0.008 0.008 0.008
+#M models/phoenix_bird/phoenix_bird.obj         6 3 -2         0.008 0.008 0.008
+
+// Identifier     Model                                 Start Position
+#PlayerInfo       models/suzanne/Suzanne.obj            -1 0 12
+#PlayerInfo       models/mcCree/mccreescetchfab.obj      1 0 12

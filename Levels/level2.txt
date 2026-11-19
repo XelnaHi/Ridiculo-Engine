@@ -1,0 +1,13 @@
+// Level ID
+#ID     1
+
+// Model Path                                   Position        Scale
+#M models/car/car.obj                            4 2 -5         0.003 0.003 0.003
+#M models/car/car.obj                           -3 0 -4         0.003 0.003 0.003
+#M models/car/car.obj                            0 4 -6         0.003 0.003 0.003
+#M models/car/car.obj                           -5 -2 -3        0.003 0.003 0.003
+#M models/car/car.obj                            3 -1 -7        0.003 0.003 0.003
+
+// Identifier     Model                                 Start Position
+#PlayerInfo       models/suzanne/Suzanne.obj            -6 0 8
+#PlayerInfo       models/mcCree/mccreescetchfab.obj      6 0 8
