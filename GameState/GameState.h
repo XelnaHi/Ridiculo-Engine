@@ -17,8 +17,13 @@ class GameState {
 public:
     static void CreateController(GLFWwindow *window, const Bindings &bindings);
 
+    static void RemovePlayer();
+    static void AddPlayer(GLFWwindow *window);
+
+
     static std::vector<Controller> controllers;
     static std::vector<PlayerInput> playerInputs;
+
 };
 
 

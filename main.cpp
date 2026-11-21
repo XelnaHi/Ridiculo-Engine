@@ -134,8 +134,6 @@ int main() {
     LevelManager::InitLevel(0);
 
 
-
-
     while (!glfwWindowShouldClose(window)) {
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;

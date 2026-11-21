@@ -94,12 +94,12 @@ void Renderer::InitShaders() {
         glUniform3f(glGetUniformLocation(shader.ID, "lightDirection"), -0.2f, -0.5f, -0.5f);
         glUniform3f(glGetUniformLocation(shader.ID, "lightColor"), 0.5f, 1.0f, 1.0f);
     }
-
 }
 
 void Renderer::Render() {
     for (int i = 0; i < GameState::controllers.size(); i++) {
         int viewportWidth = SCR_WIDTH / GameState::controllers.size();
+
         glViewport(viewportWidth * i, 0, viewportWidth, SCR_HEIGHT);
 
         glm::mat4 projection = glm::mat4(1.0f);
@@ -168,23 +168,26 @@ void Renderer::Render() {
 
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
-        Shader &suzanneShader = shaderMap.at("SuzanneShader");
-        if (i == 0) {
-            pos = GameState::controllers[1].player->camera->Position;
-            Camera *cam = GameState::controllers[1].player->camera;
-            float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
+            Shader &suzanneShader = shaderMap.at("SuzanneShader");
 
-            scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
-        } else {
-            pos = GameState::controllers[0].player->camera->Position;
-            Camera *cam = GameState::controllers[0].player->camera;
-            float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
-            scale = glm::vec3(0.5f, 0.5f, 0.5f);
-            RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
+        // We only render the other character if we actually have two players in our controllers/playerinputs list.
+        if (GameState::controllers.size() > 1) {
+            if (i == 0) {
+                pos = GameState::controllers[1].player->camera->Position;
+                Camera *cam = GameState::controllers[1].player->camera;
+                float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
+
+                scale = glm::vec3(0.5f, 0.5f, 0.5f);
+                RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
+            } else {
+                pos = GameState::controllers[0].player->camera->Position;
+                Camera *cam = GameState::controllers[0].player->camera;
+                float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
+                scale = glm::vec3(0.5f, 0.5f, 0.5f);
+                RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
+            }
+
         }
-
-        Shader &combinedShader = shaderMap.at("CombinedShader");
         for (int i = 0; i < LevelManager::activeLevel->gameObjects.size(); ++i) {
             pos = LevelManager::activeLevel->gameObjects[i].position;
             scale = LevelManager::activeLevel->gameObjects[i].scale;

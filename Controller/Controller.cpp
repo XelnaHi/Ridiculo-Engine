@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "../Camera/Camera.h"
+#include "../GameState/GameState.h"
 #include "../Levels/LevelManager.h"
 #include "../Player/Player.h"
 #include "../Renderer/Renderer.h"
@@ -53,6 +54,7 @@ void Controller::createPlayer() {
     player = newPlayer;
 }
 
+
 float Controller::getAxis(int positive, int negative) {
     return (getKeyDown(positive) ? 1.0f : 0.0f) - (getKeyDown(negative) ? 1.0f : 0.0f);
 }
@@ -87,4 +89,14 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
         LevelManager::InitLevel(2);
     }
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        GameState::RemovePlayer();
+    }
+
+    if (key == GLFW_KEY_X && action == GLFW_PRESS) {
+        GameState::AddPlayer(window);
+    }
+
+
 }

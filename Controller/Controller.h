@@ -17,7 +17,13 @@ struct Bindings {
 
     int rotatePitchUp = -1;
     int rotatePitchDown = -1;
+
+    // Bound to 'F' as a "global" utility keybind
+    int addPlayer = -1;
+    // Bound to 'X' as a "global" utility keybind
+    int removePlayer = -1;
 };
+
 
 class Player;
 class Camera;
