@@ -20,14 +20,11 @@
 #include "../Controller/Controller.h"
 #include "../Player/Player.h"
 #include "../Camera/Camera.h"
+#include "../Config/Config.h"
 #include "../Levels/LevelManager.h"
 
 
 int Renderer::drawCalls = 0;
-std::map<std::string, Shader> Renderer::shaderMap;
-
-bool Renderer::isPerspective = false;
-bool Renderer::isProjectionDirty = true;
 
 void Renderer::LoadObj(const std::string &path) {
     if (useCustomLoader) {
@@ -67,80 +64,16 @@ void Renderer::RenderObj(const std::string &name, Shader &shader, const glm::vec
     drawCalls++;
 }
 
-void Renderer::InitShaders() {
-    const Shader houseShader("shaders/2DHouse/vHouse.glsl", "shaders/2DHouse/fHouse.glsl");
-    shaderMap.emplace("HouseShader", houseShader);
-
-    const Shader suzanneShader("shaders/Week3/vSuzanne.glsl", "shaders/Week3/fSuzanne.glsl");
-    shaderMap.emplace("SuzanneShader", suzanneShader);
-
-    const Shader assimpTextureShader("shaders/Week3/TextureShaders/vAssimpTextureShader.glsl",
-                                     "shaders/Week3/TextureShaders/fAssimpTextureShader.glsl");
-    shaderMap.emplace("AssimpTextureShader", assimpTextureShader);
-
-    const Shader combinedShader("shaders/Week3/TextureNormalCombinedShaders/vAssimpCombinedShader.glsl",
-                                "shaders/Week3/TextureNormalCombinedShaders/fAssimpCombinedShader.glsl");
-    shaderMap.emplace("CombinedShader", combinedShader);
-
-    // Cache view for all shaders
-    for (auto &[name, shader]: shaderMap) {
-        shader.use();
-
-        // Apply directional light components for all shaders
-        // I was a little confused here, regarding the y-component in the directional light.
-        // Remember to read this vector as directional vector. A positive y-value would mean that the light is
-        // traveling upwards, which is generally not the case when we want to use a directional light which often
-        // mimics how we perceive light coming from *the sun*.
-        glUniform3f(glGetUniformLocation(shader.ID, "lightDirection"), -0.2f, -0.5f, -0.5f);
-        glUniform3f(glGetUniformLocation(shader.ID, "lightColor"), 0.5f, 1.0f, 1.0f);
-    }
-}
-
-void Renderer::Render() {
-    for (int i = 0; i < GameState::controllers.size(); i++) {
-        int viewportWidth = SCR_WIDTH / GameState::controllers.size();
-
-        glViewport(viewportWidth * i, 0, viewportWidth, SCR_HEIGHT);
-
-        glm::mat4 projection = glm::mat4(1.0f);
-        auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
-        auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
+void Renderer::Render(const GLint viewportWidth) {
+    for (int i = 0; i < GameState::players.size(); i++) {
+        glViewport(viewportWidth * i, 0, viewportWidth, Config::SCR_HEIGHT);
 
         glm::mat4 view;
-        view = GameState::controllers[i].player->camera->GetViewMatrix();
+        view = GameState::players[i].player->camera.GetViewMatrix();
 
-
-        for (auto &[name, shader]: shaderMap) {
+        for (auto &[name, shader]: Shader::shaderMap) {
             shader.use();
             glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_view"), 1, GL_FALSE, glm::value_ptr(view));
-        }
-
-
-        // Checks if we have pressed the keybind indicating that we want to switch projection modes
-        if (isProjectionDirty) {
-            if (!isPerspective) {
-                projection = glm::perspective(glm::radians(45.0f), (float) viewportWidth / SCR_HEIGHT, 0.1f,
-                                              100.0f);
-            } else {
-                float aspect = static_cast<float>(viewportWidth) / static_cast<float>(SCR_HEIGHT);
-                float orthoHeight = 2.0f;
-                float orthoWidth = orthoHeight * aspect;
-                projection = glm::ortho(-orthoWidth / 2, orthoWidth / 2, -orthoHeight / 2, orthoHeight / 2, 0.1f,
-                                        100.0f);
-            }
-
-            // Set the projection mode for all shaders. This is unlikely to change dynamically, so we want to refrain from setting this value over and
-            // over unless necessary, thus we gate it behind the above if statement.
-            for (auto &[name, shader]: shaderMap) {
-                shader.use();
-                // Apply projection for all shaders
-                glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_projection"),
-                                   1, GL_FALSE, glm::value_ptr(projection));
-            }
-
-            // Our input has been processed and is no longer considered "dirty" (dirty meaning we have a desired change that has not yet
-            // been processed
-            isProjectionDirty = false;
         }
 
         // Caching the uniform locations. I would like to have this done pre-render-loop, but I'm not sure how. If the shader program
@@ -168,25 +101,30 @@ void Renderer::Render() {
 
         // Multiplying matrices in the following order; I * T * R * S can then be read as S (scale) being applied to the vector first, then R (rotation) and then T (translation). We get different "behaviors" depending on what order we multiply these matrices when building them. If we were to to R * T, instead of T * R, we would get an orbiting result, because we would first translate the object away from the origin, and then rotate it around the origin as opposed to first rotating it around the origin, and then translating it away from the origin.
 
-            Shader &suzanneShader = shaderMap.at("SuzanneShader");
+
+        auto pos = glm::vec3(0.0f, 0.0f, 0.0f);
+        auto scale = glm::vec3(0.5f, 0.5f, 0.5f);
+
+        Shader &suzanneShader = Shader::shaderMap.at("SuzanneShader");
 
         // We only render the other character if we actually have two players in our controllers/playerinputs list.
-        if (GameState::controllers.size() > 1) {
+        for (int i = 0; i < GameState::players.size(); ++i) {
+        }
+        if (GameState::players.size() > 1) {
             if (i == 0) {
-                pos = GameState::controllers[1].player->camera->Position;
-                Camera *cam = GameState::controllers[1].player->camera;
-                float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
+                pos = GameState::players[1].player->camera.Position;
+                Camera &cam = GameState::players[1].player->camera;
+                float yawDeg = glm::degrees(atan2(cam.Front.x, cam.Front.z));
 
                 scale = glm::vec3(0.5f, 0.5f, 0.5f);
                 RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
             } else {
-                pos = GameState::controllers[0].player->camera->Position;
-                Camera *cam = GameState::controllers[0].player->camera;
-                float yawDeg = glm::degrees(atan2(cam->Front.x, cam->Front.z));
+                pos = GameState::players[0].player->camera.Position;
+                Camera &cam = GameState::players[0].player->camera;
+                float yawDeg = glm::degrees(atan2(cam.Front.x, cam.Front.z));
                 scale = glm::vec3(0.5f, 0.5f, 0.5f);
                 RenderObj(LevelManager::activeLevel->playerInfoList[i].playerModel, suzanneShader, pos, yawDeg, scale);
             }
-
         }
         for (int i = 0; i < LevelManager::activeLevel->gameObjects.size(); ++i) {
             pos = LevelManager::activeLevel->gameObjects[i].position;

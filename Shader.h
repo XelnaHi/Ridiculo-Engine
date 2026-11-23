@@ -5,6 +5,7 @@
 #ifndef RIDICULOENGINE_SHADER_H
 #define RIDICULOENGINE_SHADER_H
 
+#include <map>
 #include <glad/glad.h>
 #include <string>
 
@@ -15,6 +16,10 @@ public:
 
     // Read and build shader
     Shader(const char* vertexPath, const char* fragmentPath);
+
+    static void InitShaders();
+
+    static std::map<std::string, Shader> shaderMap;
 
     // Use/activate the shader
     void use();

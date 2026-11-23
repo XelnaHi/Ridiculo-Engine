@@ -9,11 +9,11 @@
 #include "../Camera/Camera.h"
 #include "../InputSystem/InputSystem.h"
 
-Player::Player(Camera *camera) : camera(camera) {
+Player::Player() : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {
 }
 
-void Player::update(const PlayerInput &input) const {
-    camera->Move(input.moveZ);
-
-    camera->Rotate(input.rotateYaw, input.rotatePitch);
+void Player::update(const PlayerInput &input, float deltaTime) {
+    camera.Move(input.moveZ, deltaTime);
+    camera.Rotate(input.rotateYaw, input.rotatePitch, deltaTime);
+    camera.UpdateProjectionMatrix();
 }

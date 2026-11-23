@@ -36,13 +36,14 @@ void LevelManager::InitLevel(unsigned int id) {
         Renderer::LoadObj(level->playerInfoList[i].playerModel);
     }
 
-    Shader playerShader = Renderer::shaderMap.at("SuzanneShader");
+    Shader playerShader = Shader::shaderMap.at("SuzanneShader");
 
     for (int i = 0; i < level->playerInfoList.size(); ++i) {
         Renderer::RenderObj(level->playerInfoList[i].playerModel, playerShader, level->playerInfoList[i].startPosition,
                             0);
 
-        GameState::controllers[i].player->camera->Position = level->playerInfoList[i].startPosition;
+        GameState::players[i].player->camera.Position = level->playerInfoList[i].startPosition;
+    std::cout << "playerinfolist size: " << level->playerInfoList.size() << std::endl;
     }
 
     activeLevel = level;

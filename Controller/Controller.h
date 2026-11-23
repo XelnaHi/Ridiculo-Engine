@@ -31,23 +31,18 @@ class Camera;
  * 'Controller' is my name take on an "Input System".
  */
 class Controller {
+
 public:
     explicit Controller(GLFWwindow *window, Bindings bindings);
 
     PlayerInput PollInput(const InputSystem &inputSystem);
 
-
-    Player *player = nullptr;
-
-    float getAxis(const InputSystem &input, int positive, int negative);
-
 private:
     GLFWwindow *window;
     Bindings bindings;
 
-    void createPlayer();
 
-    bool areUtilBindsSet = false;
+    float getAxis(const InputSystem &input, int positive, int negative);
 };
 
 

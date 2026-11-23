@@ -17,16 +17,18 @@ enum Camera_Movement {
 };
 
 
-
-
 // Class that processes input and calculates the corresponding Euler Angles,
 // vectors and matrices.
 class Camera {
 public:
+    static bool isPerspective;
+    static bool isProjectionDirty;
+
     // Default camera values
     static constexpr float YAW = -90.0f;
     static constexpr float PITCH = 0.0f;
     static constexpr float SPEED = 2.5f;
+    static constexpr float TURNSPEED = 2.5f;
     static constexpr float SENSITIVITY = 0.1f;
     static constexpr float ZOOM = 45.0f;
 
@@ -34,6 +36,7 @@ public:
     float Yaw;
     float Pitch;
     float MovementSpeed;
+    float TurnSpeed;
     float MouseSensitivity;
     float Zoom;
 
@@ -45,18 +48,20 @@ public:
     glm::vec3 WorldUp;
 
 
-
     // Construct camera class object using vectors. Learnopengl also implements a constructor
     // taking scalar values, but I don't see the point of it yet, so I'm not implementing it.
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
            float yaw = YAW, float pitch = PITCH);
 
-  [[nodiscard]] glm::mat4 GetViewMatrix() const;
+    [[nodiscard]] glm::mat4 GetViewMatrix() const;
 
-    void Move(float z);
+    void UpdateProjectionMatrix();
 
-    void Rotate(float yaw, float pitch);
+    void Move(float z, float deltaTime);
+
+    void Rotate(float yaw, float pitch, float deltaTime);
+
     /*
      * Probably want to refactor keyboard and mouse processing to a Controller class, and route input based
      * on a Controller ID.

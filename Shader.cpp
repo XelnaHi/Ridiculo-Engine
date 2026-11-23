@@ -7,6 +7,9 @@
 #include <sstream>
 #include <iostream>
 
+std::map<std::string, Shader> Shader::shaderMap;
+
+
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
     // STEP 1 - Retrieve vertex/fragment source code from filepaths
     std::string vertexCode;
@@ -87,6 +90,35 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
     // Shaders successfully linked, meaning we can safely delete them
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+}
+
+void Shader::InitShaders() {
+    const Shader houseShader("shaders/2DHouse/vHouse.glsl", "shaders/2DHouse/fHouse.glsl");
+    shaderMap.emplace("HouseShader", houseShader);
+
+    const Shader suzanneShader("shaders/Week3/vSuzanne.glsl", "shaders/Week3/fSuzanne.glsl");
+    shaderMap.emplace("SuzanneShader", suzanneShader);
+
+    const Shader assimpTextureShader("shaders/Week3/TextureShaders/vAssimpTextureShader.glsl",
+                                     "shaders/Week3/TextureShaders/fAssimpTextureShader.glsl");
+    shaderMap.emplace("AssimpTextureShader", assimpTextureShader);
+
+    const Shader combinedShader("shaders/Week3/TextureNormalCombinedShaders/vAssimpCombinedShader.glsl",
+                                "shaders/Week3/TextureNormalCombinedShaders/fAssimpCombinedShader.glsl");
+    shaderMap.emplace("CombinedShader", combinedShader);
+
+    // Cache view for all shaders
+    for (auto &[name, shader]: shaderMap) {
+        shader.use();
+
+        // Apply directional light components for all shaders
+        // I was a little confused here, regarding the y-component in the directional light.
+        // Remember to read this vector as directional vector. A positive y-value would mean that the light is
+        // traveling upwards, which is generally not the case when we want to use a directional light which often
+        // mimics how we perceive light coming from *the sun*.
+        glUniform3f(glGetUniformLocation(shader.ID, "lightDirection"), -0.2f, -0.5f, -0.5f);
+        glUniform3f(glGetUniformLocation(shader.ID, "lightColor"), 0.5f, 1.0f, 1.0f);
+    }
 }
 
 void Shader::use() {

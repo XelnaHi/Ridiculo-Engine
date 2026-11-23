@@ -15,6 +15,7 @@
 #include "Shader.h"
 #include "assimp/version.h"
 #include "Camera/Camera.h"
+#include "Config/Config.h"
 #include "Controller/Controller.h"
 #include "GameState/GameState.h"
 #include "Levels/LevelManager.h"
@@ -24,8 +25,6 @@
 #include "stb/stb_image.h"
 
 
-static constexpr int SCR_WIDTH = 1920;
-static constexpr int SCR_HEIGHT = 1080;
 
 void error_callback(int error, const char *description);
 
@@ -38,9 +37,6 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
 
-glm::mat4 projection = glm::mat4(1.0f);
-bool isPerspective = false;
-bool isProjectionDirty = true;
 
 
 // Most notably used for making frame originally rate-dependant calculations, such as velocity calculations,
@@ -52,8 +48,8 @@ float lastFrame = 0.0f;
 
 bool firstMouseScreenEnter = true;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastMouseX = SCR_WIDTH / 2.0f;
-float lastMouseY = SCR_HEIGHT / 2.0f;
+float lastMouseX = Config::SCR_WIDTH / 2.0f;
+float lastMouseY = Config::SCR_HEIGHT / 2.0f;
 
 int main() {
     glfwSetErrorCallback(error_callback);
@@ -72,7 +68,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Ridiculo Engine", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(Config::SCR_WIDTH, Config::SCR_HEIGHT, "Ridiculo Engine", NULL, NULL);
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -122,20 +118,24 @@ int main() {
     }
 
 
-    Renderer::InitShaders();
+    Shader::InitShaders();
 
-    Bindings bindings_p1 = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_A, GLFW_KEY_Q, GLFW_KEY_E};
-    Bindings bindings_p2 = {
+
+    const Bindings bindings_p1 = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_A, GLFW_KEY_Q, GLFW_KEY_E};
+
+    const Bindings bindings_p2 = {
         GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_RIGHT, GLFW_KEY_LEFT, GLFW_KEY_PAGE_DOWN, GLFW_KEY_PAGE_UP
     };
 
-    GameState::CreateController(window, bindings_p1);
-    GameState::CreateController(window, bindings_p2);
+    GameState::AddPlayer(window, bindings_p1);
+    GameState::AddPlayer(window, bindings_p2);
+
+
 
     SceneParser::ParseSceneFile("Levels/sceneFormat");
     LevelManager::InitLevel(0);
 
-    InputSystem inputSystem(window);
+    const InputSystem inputSystem(window);
 
 
     while (!glfwWindowShouldClose(window)) {
@@ -143,11 +143,11 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+
         // Clear the input struct for all players every frame.
-        for (unsigned int i = 0; i < GameState::playerInputs.size(); i++) {
-            GameState::playerInputs[i] = {};
-            GameState::playerInputs[i] = GameState::controllers[i].PollInput(inputSystem);
-            GameState::controllers[i].player->update(GameState::playerInputs[i]);
+        for (unsigned int i = 0; i < GameState::players.size(); i++) {
+            PlayerInput input = GameState::players[i].controller.PollInput(inputSystem);
+            GameState::players[i].player->update(input, deltaTime);
         }
 
         // Set the color to use when clearing the frame buffers.
@@ -156,7 +156,8 @@ int main() {
         // Clears the previous buffer of its color/depth values. If we don't, we risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        Renderer::Render();
+        GLint viewportWidth = Config::SCR_WIDTH / GameState::players.size();
+        Renderer::Render(viewportWidth);
 
 
         glfwSwapBuffers(window);

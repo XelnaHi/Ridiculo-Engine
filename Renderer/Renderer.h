@@ -20,10 +20,11 @@ class Model;
 
 class Renderer {
 public:
+
     static inline bool useCustomLoader = true;
     static int drawCalls;
 
-    static void Render();
+    static void Render(GLint viewportWidth);
 
     static void LoadObj(const std::string &path);
 
@@ -31,14 +32,6 @@ public:
                           const glm::vec3 &scale = glm::vec3(1.0f, 1.0f, 1.0f));
 
 
-    static void InitShaders();
-
-    static std::map<std::string, Shader> shaderMap;
-    static bool isPerspective;
-    static bool isProjectionDirty;
-
-    constexpr static int SCR_WIDTH = 1920;
-    constexpr static int SCR_HEIGHT = 1080;
 };
 
 

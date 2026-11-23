@@ -58,7 +58,10 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         Levels/LevelManager.h
         InputSystem/InputSystem.cpp
         Game/Game.cpp
-        Game/Game.h)
+        Game/Game.h
+        GameRules/GameRules.cpp
+        GameRules/GameRules.h
+        Config/Config.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)

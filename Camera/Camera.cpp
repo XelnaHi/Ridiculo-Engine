@@ -6,9 +6,18 @@
 
 #include <iostream>
 
+#include "../Config/Config.h"
+#include "../GameState/GameState.h"
+#include "../Renderer/Renderer.h"
+#include "glm/gtc/type_ptr.hpp"
+
+bool Camera::isPerspective = false;
+bool Camera::isProjectionDirty = true;
+
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     : Front(glm::vec3(0.0f, 0.0f, -1.0f)),
       MovementSpeed(SPEED),
+      TurnSpeed(TURNSPEED),
       MouseSensitivity(SENSITIVITY), Zoom(ZOOM) {
     Position = position;
     WorldUp = up;
@@ -24,16 +33,46 @@ glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-void Camera::Move(const float z) {
+void Camera::UpdateProjectionMatrix() {
+    int viewportWidth = Config::SCR_WIDTH / GameState::players.size();
+    glm::mat4 projection = glm::mat4(1.0f);
+    // Checks if we have pressed the keybind indicating that we want to switch projection modes
+    if (isProjectionDirty) {
 
-    // This magic number is supposed to be 'Speed' * 'deltaTime'. Needs to be refactored.
-    Position += Front * z * (2.5f * 0.016f);
+        if (!isPerspective) {
+            projection = glm::perspective(glm::radians(45.0f), (float) viewportWidth / Config::SCR_HEIGHT, 0.1f,
+                                          100.0f);
+        } else {
+            float aspect = static_cast<float>(viewportWidth) / static_cast<float>(Config::SCR_HEIGHT);
+            float orthoHeight = 2.0f;
+            float orthoWidth = orthoHeight * aspect;
+            projection = glm::ortho(-orthoWidth / 2, orthoWidth / 2, -orthoHeight / 2, orthoHeight / 2, 0.1f,
+                                    100.0f);
+        }
+
+        // Set the projection mode for all shaders. This is unlikely to change dynamically, so we want to refrain from setting this value over and
+        // over unless necessary, thus we gate it behind the above if statement.
+        for (auto &[name, shader]: Shader::shaderMap) {
+            shader.use();
+            // Apply projection for all shaders
+            glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_projection"),
+                               1, GL_FALSE, glm::value_ptr(projection));
+        }
+
+        // Our input has been processed and is no longer considered "dirty" (dirty meaning we have a desired change that has not yet
+        // been processed
+        isProjectionDirty = false;
+    }
 }
 
-void Camera::Rotate(float yaw, float pitch) {
+void Camera::Move(const float z, const float deltaTime) {
+    // This magic number is supposed to be 'Speed' * 'deltaTime'. Needs to be refactored.
+    Position += Front * z * (MovementSpeed * deltaTime);
+}
 
-    Yaw += yaw;
-    Pitch += pitch;
+void Camera::Rotate(float yaw, float pitch, const float deltaTime) {
+    Yaw += yaw * TurnSpeed * deltaTime;
+    Pitch += pitch * TurnSpeed * deltaTime;
     updateCameraVectors();
 }
 
@@ -52,7 +91,6 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
             Position += Up * velocity;
         if (direction == DOWN)
             Position -= Up * velocity;
-
     }
 }
 

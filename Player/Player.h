@@ -4,18 +4,20 @@
 
 #ifndef RIDICULOENGINE_PLAYER_H
 #define RIDICULOENGINE_PLAYER_H
-#include <string>
-
+#include "../Camera/Camera.h"
 
 struct PlayerInput;
-class Camera;
 class Controller;
 
 class Player {
 public:
-    explicit Player(Camera *camera);
-    void update(const PlayerInput& input) const;
-    Camera* camera;
+    explicit Player();
+    void update(const PlayerInput &input, float deltaTime);
+
+    // Storing a member by value means that when creating a player, the player object reserves memory for
+    // the sizeof(Camera). We use a member initializer list to initialize the camera values (world position, so far)
+    // as part of the Player constructor.
+    Camera camera;
 };
 
 
