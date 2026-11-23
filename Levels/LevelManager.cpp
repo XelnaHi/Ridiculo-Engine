@@ -45,6 +45,5 @@ void LevelManager::InitLevel(unsigned int id) {
         GameState::controllers[i].player->camera->Position = level->playerInfoList[i].startPosition;
     }
 
-
     activeLevel = level;
 }

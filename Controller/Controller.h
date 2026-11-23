@@ -4,7 +4,7 @@
 
 #ifndef RIDICULOENGINE_CONTROLLER_H
 #define RIDICULOENGINE_CONTROLLER_H
-#include "PlayerInput.h"
+#include "../InputSystem/InputSystem.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -32,23 +32,22 @@ class Camera;
  */
 class Controller {
 public:
-   explicit Controller(GLFWwindow *window, Bindings bindings);
+    explicit Controller(GLFWwindow *window, Bindings bindings);
 
-    PlayerInput PollInput();
+    PlayerInput PollInput(const InputSystem &inputSystem);
 
 
-    Player* player = nullptr;
+    Player *player = nullptr;
+
+    float getAxis(const InputSystem &input, int positive, int negative);
 
 private:
     GLFWwindow *window;
     Bindings bindings;
 
-    float getAxis(int positive, int negative);
-    float getRotation(int positive, int negative);
-    bool getKeyDown(int key);
     void createPlayer();
-    bool areUtilBindsSet = false;
 
+    bool areUtilBindsSet = false;
 };
 
 

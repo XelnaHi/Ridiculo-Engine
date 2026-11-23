@@ -12,3 +12,5 @@
     // Identifier     Model                                 Start Position
     #PlayerInfo       models/suzanne/Suzanne.obj            -3 0 10
     #PlayerInfo       models/mcCree/mccreescetchfab.obj      3 0 10
+
+    #Goal -100 5 -100

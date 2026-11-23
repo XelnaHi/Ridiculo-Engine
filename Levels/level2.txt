@@ -3,11 +3,13 @@
 
 // Model Path                                   Position        Scale
 #M models/car/car.obj                            4 2 -5         0.003 0.003 0.003
-#M models/car/car.obj                           -3 0 -4         0.003 0.003 0.003
-#M models/car/car.obj                            0 4 -6         0.003 0.003 0.003
-#M models/car/car.obj                           -5 -2 -3        0.003 0.003 0.003
-#M models/car/car.obj                            3 -1 -7        0.003 0.003 0.003
+#M models/backpack/backpack.obj                  -3 0 -4        1.0 1.0 1.0
+#M models/phoenix_bird/phoenix_bird.obj          0 4 -6         0.008 0.008 0.008
+#M models/suzanne/Suzanne.obj                    -5 -2 -3       1.0 1.0 1.0
+#M models/mcCree/mccreescetchfab.obj             3 -1 -7        1.0 1.0 1.0
 
 // Identifier     Model                                 Start Position
 #PlayerInfo       models/suzanne/Suzanne.obj            -6 0 8
 #PlayerInfo       models/mcCree/mccreescetchfab.obj      6 0 8
+
+    #Goal -100 5 -100

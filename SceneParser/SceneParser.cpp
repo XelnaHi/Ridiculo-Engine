@@ -79,10 +79,11 @@ Level *SceneParser::ParseLevel(unsigned int id, const std::string &levelFilepath
         }
 
     }
-    level.levelName = "testTeo";
+
     auto [it, inserted] = LevelManager::levels.emplace(level.ID, level);
     if (!inserted) {
         std::cout << "Failed to load level file: " << levelFilepath << std::endl;
+        return nullptr;
     }
 
     return &it->second;

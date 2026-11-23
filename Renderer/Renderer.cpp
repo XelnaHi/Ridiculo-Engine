@@ -16,7 +16,7 @@
 #include "../model_loader/Model.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "../GameState/GameState.h"
-#include "../Controller/PlayerInput.h"
+#include "../InputSystem/InputSystem.h"
 #include "../Controller/Controller.h"
 #include "../Player/Player.h"
 #include "../Camera/Camera.h"

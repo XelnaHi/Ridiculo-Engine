@@ -112,6 +112,7 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
 
 
+    // useCustomLoader = false means that we are using Assimp to load models.
     Renderer::useCustomLoader = false;
 
     if (Renderer::useCustomLoader) {
@@ -127,11 +128,14 @@ int main() {
     Bindings bindings_p2 = {
         GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_RIGHT, GLFW_KEY_LEFT, GLFW_KEY_PAGE_DOWN, GLFW_KEY_PAGE_UP
     };
+
     GameState::CreateController(window, bindings_p1);
     GameState::CreateController(window, bindings_p2);
 
     SceneParser::ParseSceneFile("Levels/sceneFormat");
     LevelManager::InitLevel(0);
+
+    InputSystem inputSystem(window);
 
 
     while (!glfwWindowShouldClose(window)) {
@@ -142,7 +146,7 @@ int main() {
         // Clear the input struct for all players every frame.
         for (unsigned int i = 0; i < GameState::playerInputs.size(); i++) {
             GameState::playerInputs[i] = {};
-            GameState::playerInputs[i] = GameState::controllers[i].PollInput();
+            GameState::playerInputs[i] = GameState::controllers[i].PollInput(inputSystem);
             GameState::controllers[i].player->update(GameState::playerInputs[i]);
         }
 

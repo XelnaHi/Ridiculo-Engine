@@ -17,12 +17,16 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     updateCameraVectors();
 }
 
+// The purpose of the lookat matrix is to convert positions related to a world origin to coordinates related
+// to the camera as the origin. The lookat needs arguments for position, target and an "arbitrary" up vector. It returns
+// the inverse of the cameras transform, converting world space to view space.
 glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
 void Camera::Move(const float z) {
 
+    // This magic number is supposed to be 'Speed' * 'deltaTime'. Needs to be refactored.
     Position += Front * z * (2.5f * 0.016f);
 }
 
@@ -85,6 +89,9 @@ void Camera::updateCameraVectors() {
     front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     front.y = sin(glm::radians(Pitch));
     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+
+    // Safety thingy to normalize the front, but the above calculation already produces a unit vector. This could be
+    // skipped but I like safety and explicitness so keeping it.
     Front = glm::normalize(front);
 
     // The Right vector value grows and shrinks depending on our cameras orientation, which is why we need to
