@@ -37,11 +37,12 @@ struct GameObject {
 
 class LevelManager {
 public:
-    static void InitLevel(unsigned int id);
+    static Level* Activate(unsigned int id);
 
     static std::vector<Scene> scenes;
     static std::map<unsigned int, Level> levels;
     static Level* activeLevel;
+    static void SwitchLevel(unsigned int id);
 };
 
 

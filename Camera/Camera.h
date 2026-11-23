@@ -56,8 +56,9 @@ public:
 
     [[nodiscard]] glm::mat4 GetViewMatrix() const;
 
-    void UpdateProjectionMatrix();
+    glm::mat4 GetProjectionMatrix(float aspect);
 
+    void SetPosition(const glm::vec3& position);
     void Move(float z, float deltaTime);
 
     void Rotate(float yaw, float pitch, float deltaTime);

@@ -3,6 +3,9 @@
 //
 #include "InputSystem.h"
 
+#include "../GameState/GameState.h"
+#include "../Levels/LevelManager.h"
+
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 
@@ -11,9 +14,8 @@ InputSystem::InputSystem(GLFWwindow *window) : window(window) {
 }
 
 
-
 bool InputSystem::IsKeyDown(const int key) const {
-    return glfwGetKey(window, key) == GLFW_PRESS;
+    return key != -1 && glfwGetKey(window, key) == GLFW_PRESS;
 }
 
 
@@ -29,22 +31,22 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     // }
 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-        // LevelManager::InitLevel(0);
+        LevelManager::SwitchLevel(0);
     }
 
     if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-        // LevelManager::InitLevel(1);
+        LevelManager::SwitchLevel(1);
     }
 
     if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-        // LevelManager::InitLevel(2);
+        LevelManager::SwitchLevel(2);
     }
 
     if (key == GLFW_KEY_F && action == GLFW_PRESS) {
-        // GameState::RemovePlayer();
+        GameState::RemovePlayer();
     }
 
     if (key == GLFW_KEY_X && action == GLFW_PRESS) {
-        // GameState::AddPlayer(window);
+        GameState::AddPlayer(window);
     }
 }

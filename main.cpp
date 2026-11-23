@@ -1,13 +1,10 @@
 #define GLFW_INCLUDE_NONE // Disallow older versions of the OpenGL header to be included
-#include <array>
-#include <complex>
 #include <filesystem>
 #include <iostream>
 #include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <assimp/Importer.hpp>
@@ -25,7 +22,6 @@
 #include "stb/stb_image.h"
 
 
-
 void error_callback(int error, const char *description);
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -35,8 +31,6 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
                             GLsizei length, const char *message, const void *userParam);
 
 void mouse_callback(GLFWwindow *window, double xPos, double yPos);
-
-
 
 
 // Most notably used for making frame originally rate-dependant calculations, such as velocity calculations,
@@ -131,9 +125,8 @@ int main() {
     GameState::AddPlayer(window, bindings_p2);
 
 
-
     SceneParser::ParseSceneFile("Levels/sceneFormat");
-    LevelManager::InitLevel(0);
+    LevelManager::SwitchLevel(0);
 
     const InputSystem inputSystem(window);
 
@@ -144,24 +137,22 @@ int main() {
         lastFrame = currentFrame;
 
 
-        // Clear the input struct for all players every frame.
+        GLint viewportWidth = Config::SCR_WIDTH / GameState::players.size();
+
         for (unsigned int i = 0; i < GameState::players.size(); i++) {
             PlayerInput input = GameState::players[i].controller.PollInput(inputSystem);
             GameState::players[i].player->update(input, deltaTime);
         }
 
-        // Set the color to use when clearing the frame buffers.
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        // Clears the previous buffer of its color/depth values. If we don't, we risk using old buffers values.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        GLint viewportWidth = Config::SCR_WIDTH / GameState::players.size();
-        Renderer::Render(viewportWidth);
-
+        for (int i = 0; i < GameState::players.size(); ++i) {
+            Renderer::Render(viewportWidth, i, GameState::players[i].player->camera, Shader::shaderMap);
+        }
 
         glfwSwapBuffers(window);
-
         glfwPollEvents();
     }
 

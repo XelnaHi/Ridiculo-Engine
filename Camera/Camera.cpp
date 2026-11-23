@@ -33,36 +33,15 @@ glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-void Camera::UpdateProjectionMatrix() {
-    int viewportWidth = Config::SCR_WIDTH / GameState::players.size();
+glm::mat4 Camera::GetProjectionMatrix(float aspect) {
     glm::mat4 projection = glm::mat4(1.0f);
-    // Checks if we have pressed the keybind indicating that we want to switch projection modes
-    if (isProjectionDirty) {
+    projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f,
+                                  100.0f);
+    return projection;
+}
 
-        if (!isPerspective) {
-            projection = glm::perspective(glm::radians(45.0f), (float) viewportWidth / Config::SCR_HEIGHT, 0.1f,
-                                          100.0f);
-        } else {
-            float aspect = static_cast<float>(viewportWidth) / static_cast<float>(Config::SCR_HEIGHT);
-            float orthoHeight = 2.0f;
-            float orthoWidth = orthoHeight * aspect;
-            projection = glm::ortho(-orthoWidth / 2, orthoWidth / 2, -orthoHeight / 2, orthoHeight / 2, 0.1f,
-                                    100.0f);
-        }
-
-        // Set the projection mode for all shaders. This is unlikely to change dynamically, so we want to refrain from setting this value over and
-        // over unless necessary, thus we gate it behind the above if statement.
-        for (auto &[name, shader]: Shader::shaderMap) {
-            shader.use();
-            // Apply projection for all shaders
-            glUniformMatrix4fv(glGetUniformLocation(shader.ID, "u_projection"),
-                               1, GL_FALSE, glm::value_ptr(projection));
-        }
-
-        // Our input has been processed and is no longer considered "dirty" (dirty meaning we have a desired change that has not yet
-        // been processed
-        isProjectionDirty = false;
-    }
+void Camera::SetPosition(const glm::vec3 &position) {
+    Position = position;
 }
 
 void Camera::Move(const float z, const float deltaTime) {

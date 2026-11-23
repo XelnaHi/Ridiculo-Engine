@@ -15,5 +15,8 @@ Player::Player() : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {
 void Player::update(const PlayerInput &input, float deltaTime) {
     camera.Move(input.moveZ, deltaTime);
     camera.Rotate(input.rotateYaw, input.rotatePitch, deltaTime);
-    camera.UpdateProjectionMatrix();
+}
+
+void Player::TeleportTo(const glm::vec3 &position) {
+    camera.SetPosition(position);
 }

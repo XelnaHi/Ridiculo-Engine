@@ -4,9 +4,7 @@
 
 #ifndef RIDICULOENGINE_RENDERER_H
 #define RIDICULOENGINE_RENDERER_H
-#include <map>
 #include <string>
-#include <vector>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -14,6 +12,8 @@
 #include "GLFW/glfw3.h"
 #include "../Shader.h"
 
+struct Level;
+class Camera;
 class Controller;
 class Model;
 
@@ -24,13 +24,14 @@ public:
     static inline bool useCustomLoader = true;
     static int drawCalls;
 
-    static void Render(GLint viewportWidth);
+    static void Render(GLint viewportWidth, int playerIndex, Camera &camera, std::map<std::string, Shader> &shaderMap);
 
     static void LoadObj(const std::string &path);
 
     static void RenderObj(const std::string &name, Shader &shader, const glm::vec3 &pos, float rot,
                           const glm::vec3 &scale = glm::vec3(1.0f, 1.0f, 1.0f));
 
+    static void PrepareLevel(const Level& level);
 
 };
 

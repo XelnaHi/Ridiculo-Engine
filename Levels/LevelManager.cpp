@@ -7,44 +7,29 @@
 #include <iostream>
 #include <map>
 
-#include "../Controller/Controller.h"
 #include "../GameState/GameState.h"
 #include "../Renderer/Renderer.h"
 #include "../SceneParser/SceneParser.h"
-#include "../Player/Player.h"
-#include "../Camera/Camera.h"
+
 
 std::vector<Scene> LevelManager::scenes;
 std::map<unsigned int, Level> LevelManager::levels;
 Level *LevelManager::activeLevel;
 
+void LevelManager::SwitchLevel(unsigned int id) {
+        const Level* level = Activate(id);
+        if (!level) return;
+        Renderer::PrepareLevel(*level);
+        GameState::PlacePlayersAtStart(*level);
+}
 
-void LevelManager::InitLevel(unsigned int id) {
-    const std::string levelPath = scenes[id].levelFilepath;
-    Level *level = SceneParser::ParseLevel(id, levelPath);
 
+Level *LevelManager::Activate(unsigned int id) {
+    Level *level = SceneParser::ParseLevel(id, scenes[id].levelFilepath);
     if (!level) {
-        std::cout << "Level: " << levelPath << " could not be parsed" << std::endl;
-        return;
+        std::cout << "Level " << id << " could not be parsed\n";
+        return nullptr;
     }
-
-    for (int i = 0; i < level->gameObjects.size(); ++i) {
-        Renderer::LoadObj(level->gameObjects[i].modelPath);
-    }
-
-    for (int i = 0; i < level->playerInfoList.size(); ++i) {
-        Renderer::LoadObj(level->playerInfoList[i].playerModel);
-    }
-
-    Shader playerShader = Shader::shaderMap.at("SuzanneShader");
-
-    for (int i = 0; i < level->playerInfoList.size(); ++i) {
-        Renderer::RenderObj(level->playerInfoList[i].playerModel, playerShader, level->playerInfoList[i].startPosition,
-                            0);
-
-        GameState::players[i].player->camera.Position = level->playerInfoList[i].startPosition;
-    std::cout << "playerinfolist size: " << level->playerInfoList.size() << std::endl;
-    }
-
     activeLevel = level;
+    return level;
 }

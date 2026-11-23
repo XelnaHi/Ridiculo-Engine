@@ -13,6 +13,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+struct Level;
 struct Bindings;
 struct PlayerInput;
 
@@ -26,8 +27,11 @@ public:
     static void RemovePlayer();
 
     static void AddPlayer(GLFWwindow *window, const Bindings &bindings);
+    static void AddPlayer(GLFWwindow *window);
 
     static std::vector<PlayerSlot> players;
+
+    static void PlacePlayersAtStart(const Level& level);
 };
 
 

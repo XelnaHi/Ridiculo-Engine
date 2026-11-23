@@ -14,6 +14,8 @@ public:
     explicit Player();
     void update(const PlayerInput &input, float deltaTime);
 
+    void TeleportTo(const glm::vec3 &position);
+
     // Storing a member by value means that when creating a player, the player object reserves memory for
     // the sizeof(Camera). We use a member initializer list to initialize the camera values (world position, so far)
     // as part of the Player constructor.
