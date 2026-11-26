@@ -63,11 +63,16 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         GameRules/GameRules.h
         Config/Config.h
         ECS/Entity/Entity.h
-        ECS/Components/EntityComponent.h
         ECS/Components/Transform/Transform.h
         ECS/Entity/EntityManager.cpp
         ECS/Entity/EntityManager.h
         ECS/Components/ComponentArray.h
+        ECS/Components/ComponentManager.h
+        ECS/Systems/System.h
+        ECS/Systems/SystemManager.h
+        ECS/Systems/SystemManager.h
+        ECS/Systems/SystemManager.h
+        ECS/Components/ComponentManager.h
         ECS/Components/ComponentManager.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
