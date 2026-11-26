@@ -67,7 +67,8 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         ECS/Components/Transform/Transform.h
         ECS/Entity/EntityManager.cpp
         ECS/Entity/EntityManager.h
-        ECS/Components/ComponentArray.h)
+        ECS/Components/ComponentArray.h
+        ECS/Components/ComponentManager.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)
