@@ -73,7 +73,8 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         ECS/Systems/SystemManager.h
         ECS/Systems/SystemManager.h
         ECS/Components/ComponentManager.h
-        ECS/Components/ComponentManager.h)
+        ECS/Components/ComponentManager.h
+        ECS/Coordinator/Coordinator.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)

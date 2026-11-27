@@ -43,3 +43,9 @@ void EntityManager::SetSignature(Entity entity, Signature signature) {
     // Put this entity's signature into the array
     signatures[entity] = signature;
 }
+
+Signature EntityManager::GetSignature(Entity entity) {
+    assert(entity < MAX_ENTITIES && "Entity out of range");
+
+    return signatures[entity];
+}

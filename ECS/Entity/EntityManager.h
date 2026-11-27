@@ -20,7 +20,7 @@ public:
     Entity CreateEntity();
     void DestroyEntity(Entity entity);
     void SetSignature(Entity entity, Signature signature);
-
+    Signature GetSignature(Entity entity);
 private:
     // Queue of unused entity IDs
     std::queue<Entity> availableEntities;

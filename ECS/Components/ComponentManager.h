@@ -40,6 +40,13 @@ class ComponentManager {
         return mComponentTypes[typeName];
     }
 
+
+    template<typename T>
+    T& GetComponent(Entity entity) {
+      return GetComponentArray<T>()->GetData(entity);
+    }
+
+
     template<typename T>
     void AddComponent(Entity entity, T component) {
         GetComponentArray<T>()->InsertData(entity, component);
