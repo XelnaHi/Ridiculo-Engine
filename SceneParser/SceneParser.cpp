@@ -9,12 +9,11 @@
 #include <sstream>
 #include <vector>
 #include <../Levels/LevelManager.h>
-#include <../Player/Player.h>
 
+#include "../ECS/Components/ModelComponent.h"
 #include "../ECS/Coordinator/Coordinator.h"
 #include "../ECS/Components/Tag.h"
-#include "../ECS/Components/Model.h"
-#include "../ECS/Components/Transform.h"
+#include "../ECS/Components/Transform.h"'
 
 extern Coordinator gCoordinator;
 
@@ -81,8 +80,9 @@ Level *SceneParser::ParseLevel(unsigned int id, const std::string &levelFilepath
             std::string tagName = go.modelPath.substr(0, go.modelPath.find_last_of('/')) + std::to_string(tagId);
             Entity entity = gCoordinator.CreateEntity();
             gCoordinator.AddComponent(entity, Tag(tagName));
-            gCoordinator.AddComponent(entity, Transform({go.position.x, go.position.y, go.position.z}));
-            gCoordinator.AddComponent(entity, Model(go.modelPath));
+            gCoordinator.AddComponent(entity, Transform({go.position.x, go.position.y, go.position.z},
+                                                        {go.scale.x, go.scale.y, go.scale.z}));
+            gCoordinator.AddComponent(entity, ModelComponent(go.modelPath));
 
             tagId++;
         }

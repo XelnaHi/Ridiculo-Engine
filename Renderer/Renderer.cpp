@@ -18,6 +18,7 @@
 #include "../Player/Player.h"
 #include "../Camera/Camera.h"
 #include "../Config/Config.h"
+#include "../ECS/Systems/RenderSystem.h"
 #include "../Levels/LevelManager.h"
 
 
@@ -71,7 +72,7 @@ void Renderer::PrepareLevel(const Level &level) {
 }
 
 void Renderer::Render(const GLint viewportWidth, const int playerIndex, Camera &camera,
-                      std::map<std::string, Shader> &shaderMap) {
+                      std::map<std::string, Shader> &shaderMap, RenderSystem& renderSystem) {
     glViewport(viewportWidth * playerIndex, 0, viewportWidth, Config::SCR_HEIGHT);
 
     glm::mat4 view = GameState::players[playerIndex].player->camera.GetViewMatrix();
@@ -131,11 +132,15 @@ void Renderer::Render(const GLint viewportWidth, const int playerIndex, Camera &
         }
     }
 
-    for (int i = 0; i < LevelManager::activeLevel->gameObjects.size(); ++i) {
-        pos = LevelManager::activeLevel->gameObjects[i].position;
-        scale = LevelManager::activeLevel->gameObjects[i].scale;
-        RenderObj(LevelManager::activeLevel->gameObjects[i].modelPath, suzanneShader, pos, 0, scale);
-    }
+
+
+    renderSystem.Draw(suzanneShader);
+
+    // for (int i = 0; i < LevelManager::activeLevel->gameObjects.size(); ++i) {
+    //     pos = LevelManager::activeLevel->gameObjects[i].position;
+    //     scale = LevelManager::activeLevel->gameObjects[i].scale;
+    //     RenderObj(LevelManager::activeLevel->gameObjects[i].modelPath, suzanneShader, pos, 0, scale);
+    // }
 
 
     // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.

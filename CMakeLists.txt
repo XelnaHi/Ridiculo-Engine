@@ -34,7 +34,6 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         model_loader/Mesh.cpp
         model_loader/Mesh.h
         model_loader/Model.cpp
-        model_loader/Model.cpp
         model_loader/Model.h
         custom_obj_loader/CustomMesh.cpp
         custom_obj_loader/CustomMesh.h
@@ -75,8 +74,7 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         ECS/Systems/PrintEntitySystem.h
         ECS/Components/Tag.h
         ECS/Systems/PositionSystem.h
-        ECS/Components/Model.h
-        ECS/Systems/DrawSystem.h)
+        ECS/Systems/RenderSystem.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)

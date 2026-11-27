@@ -24,7 +24,8 @@
 #include "Player/Player.h"
 #include "SceneParser/SceneParser.h"
 #include "stb/stb_image.h"
-#include "../ECS/Components/Model.h"
+#include "../ECS/Components/ModelComponent.h"
+#include "ECS/Systems/RenderSystem.h"
 
 
 void error_callback(int error, const char *description);
@@ -124,7 +125,7 @@ int main() {
 
     gCoordinator.RegisterComponent<Tag>();
     gCoordinator.RegisterComponent<Transform>();
-    gCoordinator.RegisterComponent<Model>();
+    gCoordinator.RegisterComponent<ModelComponent>();
 
     std::shared_ptr<PrintEntitySystem> printTagSystem = gCoordinator.RegisterSystem<PrintEntitySystem>();
 
@@ -150,6 +151,18 @@ int main() {
 
     printPosSystem->PrintPositionSystem();
     printTagSystem->PrintUpdate();
+
+    auto renderSystem = gCoordinator.RegisterSystem<RenderSystem>();
+    Signature renderSig;
+    renderSig.set(gCoordinator.GetComponentType<Transform>());
+    renderSig.set(gCoordinator.GetComponentType<ModelComponent>());
+    renderSig.set(gCoordinator.GetComponentType<Tag>());
+    gCoordinator.SetSystemSignature<RenderSystem>(renderSig);
+
+
+
+
+
 
 
     Shader::InitShaders();
@@ -189,7 +202,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (int i = 0; i < GameState::players.size(); ++i) {
-            Renderer::Render(viewportWidth, i, GameState::players[i].player->camera, Shader::shaderMap);
+            Renderer::Render(viewportWidth, i, GameState::players[i].player->camera, Shader::shaderMap, *renderSystem);
         }
 
         glfwSwapBuffers(window);

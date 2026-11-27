@@ -12,6 +12,8 @@
 #include "GLFW/glfw3.h"
 #include "../Shader.h"
 
+
+class RenderSystem;
 struct Level;
 class Camera;
 class Controller;
@@ -24,7 +26,7 @@ public:
     static inline bool useCustomLoader = true;
     static int drawCalls;
 
-    static void Render(GLint viewportWidth, int playerIndex, Camera &camera, std::map<std::string, Shader> &shaderMap);
+    static void Render(GLint viewportWidth, int playerIndex, Camera &camera, std::map<std::string, Shader> &shaderMap, RenderSystem& renderSystem);
 
     static void LoadObj(const std::string &path);
 
