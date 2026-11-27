@@ -19,7 +19,7 @@ class ComponentManager {
     void RegisterComponent() {
         const char* typeName = typeid(T).name();
 
-        assert(mComponentTypes.find(typeName) == mComponentTypes.end() && "Trying to register component type '" + typeName + " more than once.");
+        assert(mComponentTypes.find(typeName) == mComponentTypes.end() && "Trying to register component type more than once.");
 
         // Add the component type to the component type map
         mComponentTypes.insert({typeName, mNextComponentType});

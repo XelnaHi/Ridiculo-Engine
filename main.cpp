@@ -14,6 +14,10 @@
 #include "Camera/Camera.h"
 #include "Config/Config.h"
 #include "Controller/Controller.h"
+#include "ECS/Components/Tag.h"
+#include "ECS/Coordinator/Coordinator.h"
+#include "ECS/Systems/PositionSystem.h"
+#include "ECS/Systems/PrintEntitySystem.h"
 #include "GameState/GameState.h"
 #include "Levels/LevelManager.h"
 #include "Renderer/Renderer.h"
@@ -44,6 +48,9 @@ bool firstMouseScreenEnter = true;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastMouseX = Config::SCR_WIDTH / 2.0f;
 float lastMouseY = Config::SCR_HEIGHT / 2.0f;
+
+
+Coordinator gCoordinator;
 
 int main() {
     glfwSetErrorCallback(error_callback);
@@ -110,6 +117,37 @@ int main() {
     } else {
         std::cout << "Using Assimp to load models." << std::endl;
     }
+
+
+    gCoordinator.Init();
+
+    gCoordinator.RegisterComponent<Tag>();
+    gCoordinator.RegisterComponent<Transform>();
+
+    std::shared_ptr<PrintEntitySystem> printTagSystem = gCoordinator.RegisterSystem<PrintEntitySystem>();
+
+    Signature signature;
+    signature.set(gCoordinator.GetComponentType<Tag>());
+    gCoordinator.SetSystemSignature<PrintEntitySystem>(signature);
+
+    Entity testTagEntity = gCoordinator.CreateEntity();
+    gCoordinator.AddComponent(testTagEntity, Tag{"TestTag Entity"});
+
+
+    auto printPosSystem = gCoordinator.RegisterSystem<PositionSystem>();
+    Signature posSig;
+    posSig.set(gCoordinator.GetComponentType<Tag>());
+    posSig.set(gCoordinator.GetComponentType<Transform>());
+    gCoordinator.SetSystemSignature<PositionSystem>(posSig);
+
+    Entity posTagEntity = gCoordinator.CreateEntity();
+    Tag posTag("Pos Tag Entity");
+    gCoordinator.AddComponent(posTagEntity, posTag);
+    Transform pos(glm::vec3(1.0f));
+    gCoordinator.AddComponent(posTagEntity, pos);
+
+    printPosSystem->PrintPositionSystem();
+    printTagSystem->PrintUpdate();
 
 
     Shader::InitShaders();

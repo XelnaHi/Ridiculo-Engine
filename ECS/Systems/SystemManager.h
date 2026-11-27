@@ -45,7 +45,7 @@ public:
         }
     }
 
-    void EntitySignatureChanged(Entity entity, Signature entitySignature); {
+    void EntitySignatureChanged(Entity entity, Signature entitySignature) {
         // Notify each system that an entity's signature changed. This matters because entity signatures
         // describe which components are attached to the entity, and all specified components required for a
         // system must be present within the entity, else the components of the entity will
