@@ -24,6 +24,7 @@
 #include "Player/Player.h"
 #include "SceneParser/SceneParser.h"
 #include "stb/stb_image.h"
+#include "../ECS/Components/Model.h"
 
 
 void error_callback(int error, const char *description);
@@ -123,6 +124,7 @@ int main() {
 
     gCoordinator.RegisterComponent<Tag>();
     gCoordinator.RegisterComponent<Transform>();
+    gCoordinator.RegisterComponent<Model>();
 
     std::shared_ptr<PrintEntitySystem> printTagSystem = gCoordinator.RegisterSystem<PrintEntitySystem>();
 

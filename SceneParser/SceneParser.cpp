@@ -11,6 +11,12 @@
 #include <../Levels/LevelManager.h>
 #include <../Player/Player.h>
 
+#include "../ECS/Coordinator/Coordinator.h"
+#include "../ECS/Components/Tag.h"
+#include "../ECS/Components/Model.h"
+#include "../ECS/Components/Transform.h"
+
+extern Coordinator gCoordinator;
 
 void SceneParser::ParseSceneFile(const std::string &filePath) {
     std::ifstream file(filePath);
@@ -44,6 +50,8 @@ Level *SceneParser::ParseLevel(unsigned int id, const std::string &levelFilepath
         return &LevelManager::levels[id];
     }
 
+    int tagId = 0;
+
     std::ifstream file(levelFilepath);
     if (!file.is_open()) {
         std::cout << "Failed to load level file: " << levelFilepath << std::endl;
@@ -68,6 +76,15 @@ Level *SceneParser::ParseLevel(unsigned int id, const std::string &levelFilepath
             ss >> go.modelPath >> go.position.x >> go.position.y >> go.position.z >> go.scale.x >> go.scale.y >> go.
                     scale.z;
             level.gameObjects.emplace_back(go);
+
+
+            std::string tagName = go.modelPath.substr(0, go.modelPath.find_last_of('/')) + std::to_string(tagId);
+            Entity entity = gCoordinator.CreateEntity();
+            gCoordinator.AddComponent(entity, Tag(tagName));
+            gCoordinator.AddComponent(entity, Transform({go.position.x, go.position.y, go.position.z}));
+            gCoordinator.AddComponent(entity, Model(go.modelPath));
+
+            tagId++;
         }
 
         if (prefix == "#PlayerInfo") {
@@ -77,7 +94,6 @@ Level *SceneParser::ParseLevel(unsigned int id, const std::string &levelFilepath
                     playerInfo.startPosition.z;
             level.playerInfoList.emplace_back(playerInfo);
         }
-
     }
 
     auto [it, inserted] = LevelManager::levels.emplace(level.ID, level);

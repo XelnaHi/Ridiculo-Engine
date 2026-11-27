@@ -74,7 +74,9 @@ add_executable(RidiculoEngine main.cpp external/glad/src/glad.c
         ECS/Coordinator/Coordinator.h
         ECS/Systems/PrintEntitySystem.h
         ECS/Components/Tag.h
-        ECS/Systems/PositionSystem.h)
+        ECS/Systems/PositionSystem.h
+        ECS/Components/Model.h
+        ECS/Systems/DrawSystem.h)
 
 target_include_directories(RidiculoEngine PRIVATE external/glad/include external)
 target_link_libraries(RidiculoEngine PRIVATE glfw assimp::assimp)
