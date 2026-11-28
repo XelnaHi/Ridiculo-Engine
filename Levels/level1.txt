@@ -2,12 +2,12 @@
     // Level ID
     #ID     0
 
-    // Model Path                                   Position        Scale
-    #M models/backpack/backpack.obj                 -2 3 -2         1.0 1.0 1.0
-    #M models/backpack/backpack.obj                  2 3 -2         1.0 1.0 1.0
-    #M models/backpack/backpack.obj                 -4 0 -2         1.0 1.0 1.0
-    #M models/backpack/backpack.obj                  2 0 -2         1.0 1.0 1.0
-    #M models/backpack/backpack.obj                 -2 -1 -2        1.0 1.0 1.0
+    // Model Path                                  Position        Scale           Texture
+    #M models/backpack/backpack.obj                -2 3 -2         1.0 1.0 1.0     models/phoenix_bird/MatI_Ride_FengHuang_01a_baseColor.png
+    #M models/backpack/backpack.obj                 2 3 -2         1.0 1.0 1.0
+    #M models/backpack/backpack.obj                -4 0 -2         1.0 1.0 1.0
+    #M models/backpack/backpack.obj                 2 0 -2         1.0 1.0 1.0     models/backpack/diffuse.jpg
+    #M models/backpack/backpack.obj                -2 -1 -2        1.0 1.0 1.0     models/backpack/diffuse.jpg
 
     // Identifier     Model                                 Start Position
     #PlayerInfo       models/suzanne/Suzanne.obj            -3 0 10

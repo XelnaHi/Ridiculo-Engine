@@ -41,7 +41,8 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
     uniform sampler2D texture_specular1;
     uniform sampler2D texture_specular2;
  */
-void Mesh::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale) {
+void Mesh::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale,
+                unsigned int overrideDiffuseID) {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
     unsigned int normalNr = 1;
@@ -74,7 +75,11 @@ void Mesh::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3
         shader.setInt(name + number, i);
 
         // Here we specify which texture handle goes into the previously activated texture unit. I gather that the reason we have to do this for textures, but not for, say, VBO's, is that which VBO is bound is a global state limited to a single "slot", while textures can be bound to 1 of at least 16 texture slots (depends on the driver).
-        glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+        if (name == "texture_diffuse" && overrideDiffuseID != 0) {
+            glBindTexture(GL_TEXTURE_2D, overrideDiffuseID);
+        } else {
+            glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+        }
     }
 
     glBindVertexArray(VAO);

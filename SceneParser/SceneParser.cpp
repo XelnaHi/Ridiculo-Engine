@@ -13,7 +13,9 @@
 #include "../ECS/Components/ModelComponent.h"
 #include "../ECS/Coordinator/Coordinator.h"
 #include "../ECS/Components/Tag.h"
-#include "../ECS/Components/Transform.h"'
+#include "../ECS/Components/TextureComponent.h"
+#include "../ECS/Components/Transform.h"
+#include "../model_loader/TextureLoader.h"
 
 extern Coordinator gCoordinator;
 
@@ -71,18 +73,31 @@ Level *SceneParser::ParseLevel(unsigned int id, const std::string &levelFilepath
         }
 
         if (prefix == "#M") {
+            std::string texturePath;
             GameObject go;
             ss >> go.modelPath >> go.position.x >> go.position.y >> go.position.z >> go.scale.x >> go.scale.y >> go.
-                    scale.z;
+                    scale.z >> texturePath;
             level.gameObjects.emplace_back(go);
 
 
             std::string tagName = go.modelPath.substr(0, go.modelPath.find_last_of('/')) + std::to_string(tagId);
+
             Entity entity = gCoordinator.CreateEntity();
+
             gCoordinator.AddComponent(entity, Tag(tagName));
             gCoordinator.AddComponent(entity, Transform({go.position.x, go.position.y, go.position.z},
                                                         {go.scale.x, go.scale.y, go.scale.z}));
             gCoordinator.AddComponent(entity, ModelComponent(go.modelPath));
+
+            if (!texturePath.empty()) {
+                size_t slash = texturePath.find_last_of('/');
+                std::string directory = texturePath.substr(0, slash);
+                std::string filename = texturePath.substr(slash + 1);
+               unsigned int texID = TextureLoader::TextureFromFile(filename.c_str(), directory);
+
+                gCoordinator.AddComponent(entity, TextureComponent(texturePath, texID));
+            }
+
 
             tagId++;
         }

@@ -56,6 +56,12 @@ class Coordinator {
         mSystemManager->EntitySignatureChanged(entity, signature);
     }
 
+    template <typename T>
+    bool HasComponent(Entity entity) const {
+        Signature signature = mEntityManager->GetSignature(entity);
+        return signature.test(mComponentManager->GetComponentType<T>());
+    }
+
     template<typename T>
     T& GetComponent(Entity entity) {
         return mComponentManager->GetComponent<T>(entity);

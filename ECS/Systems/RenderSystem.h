@@ -10,6 +10,7 @@
 #include "../Components/Transform.h"
 #include "../Coordinator/Coordinator.h"
 #include "../../model_loader/Model.h"
+#include "../Components/TextureComponent.h"
 
 extern Coordinator gCoordinator;
 
@@ -20,10 +21,15 @@ public:
             auto& modelComp = gCoordinator.GetComponent<ModelComponent>(entity);
             auto & transform = gCoordinator.GetComponent<Transform>(entity);
 
+            unsigned int overrideDiffuseID = 0;
+            if (gCoordinator.HasComponent<TextureComponent>(entity)) {
+                overrideDiffuseID = gCoordinator.GetComponent<TextureComponent>(entity).textureID;
+            }
+
             Model* model = Model::GetModel(modelComp.modelName);
 
             if (model) {
-                model->draw(shader, transform.Position, 0.0f, transform.Scale );
+                model->draw(shader, transform.Position, 0.0f, transform.Scale, overrideDiffuseID);
             }
 
         }

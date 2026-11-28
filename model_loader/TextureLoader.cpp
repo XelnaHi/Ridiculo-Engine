@@ -9,7 +9,7 @@
 #include "glad/glad.h"
 #include "../stb/stb_image.h"
 
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
+std::unordered_map<std::string, unsigned int> TextureLoader::cachedTextures{};
 
 /*
  * A helper function that iterates over all the texture locations of the given texture type, retrieves the texture's file location and then loads and generates the texture and stores the information in a Vertex struct.
@@ -55,9 +55,7 @@ std::vector<Texture> TextureLoader::loadMaterialTextures(const std::string &dire
     return textures;
 }
 
-void TextureLoader::loadMaterialTextures(const std::string &directory, std::string typeName,
-    std::vector<Texture> &loaded_textures) {
-}
+
 
 
 /*
@@ -70,11 +68,18 @@ void TextureLoader::loadMaterialTextures(const std::string &directory, std::stri
  * - models/backpack/normal.roughness
  * - etc
  */
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma) {
+unsigned int TextureLoader::TextureFromFile(const char *path, const std::string &directory, bool gamma) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
+    if (cachedTextures.contains(filename)) {
+        std::cout << "Returning cached Texture ID handle for: " << filename << std::endl;
+        return cachedTextures[filename];
+    }
+
     unsigned int textureID;
+    // This returns a handle to a texture object on the GPU. This is separate from the texture slot onto which
+    // a texture gets bound to.
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
@@ -102,6 +107,8 @@ unsigned int TextureFromFile(const char *path, const std::string &directory, boo
         std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
+
+    cachedTextures[filename] = textureID;
 
     return textureID;
 }

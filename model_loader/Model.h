@@ -20,7 +20,7 @@ public:
     Model(const std::string &path);
 
     static Model* Load(const std::string &path);
-    void draw(Shader& shader, const glm::vec3& pos, float rot, const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f));
+    void draw(Shader& shader, const glm::vec3& pos, float rot, const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f), unsigned int overrideDiffuseID = 0);
 
     std::string objModelName;
     static Model* GetModel(const std::string& key);

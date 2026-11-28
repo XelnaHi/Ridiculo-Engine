@@ -31,14 +31,14 @@ Model * Model::Load(const std::string &path) {
         std::cout << "Loaded cached obj model: " << it->second->objModelName << std::endl;
         return it->second;
     }
-    Model* model = new Model(path);
+    auto model = new Model(path);
     cachedModels[path] = model;
     return model;
 }
 
-void Model::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale) {
+void Model::draw(Shader &shader, const glm::vec3 &pos, float rot, const glm::vec3 &scale, unsigned int overrideDiffuseID) {
     for (unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].draw(shader, pos, rot, scale);
+        meshes[i].draw(shader, pos, rot, scale, overrideDiffuseID);
     }
 }
 

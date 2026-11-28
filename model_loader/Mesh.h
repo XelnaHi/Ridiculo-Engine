@@ -38,7 +38,7 @@ public:
 
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
-    void draw(Shader& shader, const glm::vec3& pos, float rot, const glm::vec3& scale = glm::vec3(1.0f));
+    void draw(Shader& shader, const glm::vec3& pos, float rot, const glm::vec3& scale = glm::vec3(1.0f), unsigned int overrideDiffuseID = 0);
 
     private:
     // Render data

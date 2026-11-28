@@ -25,6 +25,7 @@
 #include "SceneParser/SceneParser.h"
 #include "stb/stb_image.h"
 #include "../ECS/Components/ModelComponent.h"
+#include "ECS/Components/TextureComponent.h"
 #include "ECS/Systems/RenderSystem.h"
 
 
@@ -126,6 +127,7 @@ int main() {
     gCoordinator.RegisterComponent<Tag>();
     gCoordinator.RegisterComponent<Transform>();
     gCoordinator.RegisterComponent<ModelComponent>();
+    gCoordinator.RegisterComponent<TextureComponent>();
 
     std::shared_ptr<PrintEntitySystem> printTagSystem = gCoordinator.RegisterSystem<PrintEntitySystem>();
 

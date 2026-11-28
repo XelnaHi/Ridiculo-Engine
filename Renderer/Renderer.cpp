@@ -73,6 +73,8 @@ void Renderer::PrepareLevel(const Level &level) {
 
 void Renderer::Render(const GLint viewportWidth, const int playerIndex, Camera &camera,
                       std::map<std::string, Shader> &shaderMap, RenderSystem& renderSystem) {
+
+
     glViewport(viewportWidth * playerIndex, 0, viewportWidth, Config::SCR_HEIGHT);
 
     glm::mat4 view = GameState::players[playerIndex].player->camera.GetViewMatrix();
@@ -90,9 +92,6 @@ void Renderer::Render(const GLint viewportWidth, const int playerIndex, Camera &
                            1, GL_FALSE, glm::value_ptr(projection));
     }
 
-    // Caching the uniform locations. I would like to have this done pre-render-loop, but I'm not sure how. If the shader program
-    // is switched to another, the values have to be reset anyway, so I'm not sure if my desired "optimization" is actually viable
-
     // Set the matrices to identity matrices in order to give them clean slates. If we dont, we risk using old matrix values
     // which can skew our transformation matrices as we start applying translation, rotation and scale.
 
@@ -103,6 +102,7 @@ void Renderer::Render(const GLint viewportWidth, const int playerIndex, Camera &
 
     // Orthographic projection = a cube-like frustum defined by a near-plane, far-plane, width, height and length. Coordinates in front of the near plane, and coordinates behind the far plane are clipped. This type of projection doesn't touch the w component which means that if the w remains = 1.0f, x, y and z components will remain intact during perspective division. This projection mode is usually used for 2D rendering.
 
+    // Perspective projection = we can roughly describe perspective as objects appearing smaller the further away they are from us, as well as objects appearing as if coinciding, or "travelling towards"  a shared point in the distance. Perspective projection mimics this by increasing the value of the w component the further away an object is from the origin. When perspective division happens, this means that x, y and z coordinates are scaled based on the value of the w component. Perspective projection defines a clip space within the range of [-w, w]. Coordinates outside of this range fall outside of the mapped-to NDC coordinates, and are thus not rendered.
     // Perspective projection = we can roughly describe perspective as objects appearing smaller the further away they are from us, as well as objects appearing as if coinciding, or "travelling towards"  a shared point in the distance. Perspective projection mimics this by increasing the value of the w component the further away an object is from the origin. When perspective division happens, this means that x, y and z coordinates are scaled based on the value of the w component. Perspective projection defines a clip space within the range of [-w, w]. Coordinates outside of this range fall outside of the mapped-to NDC coordinates, and are thus not rendered.
 
     // Similarly to orthographic projection, perspective projection creates a frustum with a near and far plane, with the caveat that this frustum is non-uniform (whereas the ortho proj is uniformly cube-like) and includes a field of view specified in radians or degrees. Furthermore, it uses an aspect ratio equal to width divided by height.
@@ -132,18 +132,7 @@ void Renderer::Render(const GLint viewportWidth, const int playerIndex, Camera &
         }
     }
 
+    Shader &combinedShader = Shader::shaderMap.at("CombinedShader");
+    renderSystem.Draw(combinedShader);
 
-
-    renderSystem.Draw(suzanneShader);
-
-    // for (int i = 0; i < LevelManager::activeLevel->gameObjects.size(); ++i) {
-    //     pos = LevelManager::activeLevel->gameObjects[i].position;
-    //     scale = LevelManager::activeLevel->gameObjects[i].scale;
-    //     RenderObj(LevelManager::activeLevel->gameObjects[i].modelPath, suzanneShader, pos, 0, scale);
-    // }
-
-
-    // Usually, all render commands go to the back buffer, while the front buffer contains the final output image.
-    // Since rendering isn't instant, but rather pixel by pixel, only rendering to a single buffer would cause those leftover render artifacts to be visible.
-    // After all rendering commands are done, we swap the buffers.
 }
